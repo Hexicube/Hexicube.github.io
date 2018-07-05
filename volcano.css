@@ -1,0 +1,78 @@
+.rounded {
+    border: 2px solid #888;
+	border-style: outset;
+    border-radius: 10px;
+    background-color: whiteSmoke;
+    display: inline-block;
+	height: 32px;
+	margin: 3px;
+}
+
+.rounded-start {
+	vertical-align: top;
+    border-radius: 8px 0px 0px 8px;
+	height: 100%;
+	display: inline-block;
+	text-align: center;
+	background-color: #a9e7ff;
+	border-right: 2px solid #99f;
+	line-height: 30px;
+	width: 100px;
+}
+
+.rounded-mid {
+	vertical-align: top;
+	border: 1px 0px 1px 0px black;
+	height: 100%;
+	display: inline-block;
+	text-align: center;
+	line-height: 30px;
+	width: 100px;
+}
+
+.rounded-end {
+	vertical-align: top;
+    border-radius: 0px 8px 8px 0px;
+	height: 100%;
+	display: inline-block;
+	text-align: center;
+	line-height: 30px;
+	padding-right: 5px;
+	width: 60px;
+}
+
+.double-gauge {
+    border: 1px solid #ccc;
+    background-color: whiteSmoke;
+    width: 300px;
+	height: calc(100% - 2px);
+    display: inline-block;
+}
+
+.gauge-top {
+	display: block;
+	height: calc(50% - 4px);
+	top: 0%;
+	left: 0%;
+	background-color: #00c;
+	border: 2px #66c;
+	border-style: outset;
+}
+
+.gauge-bottom {
+	display: block;
+	height: calc(50% - 4px);
+	top: 50%;
+	left: 0%;
+	background-color: #c00;
+	border: 2px #c66;
+	border-style: outset;
+}
+
+input[type='number'] {
+	padding: 0px !important;
+	height: calc(100% - 4px) !important;
+	border-width: 2px !important;
+	width: 60px;
+	line-height: 15px;
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<head>
+	<title>ONI Volcano Analyst</title>
+	<link rel="stylesheet" href="volcano.css">
+	<script src='compute.js'></script>
+	<script>
+		const updateBars = (elem, rollData) => {
+			const bars = elem.children[1];
+			const values = elem.children[2];
+			
+			bars.children[0].style.width = 'calc(' + (rollData.roll[0] * 100) + '% - 4px)';
+			bars.children[1].style.width = 'calc(' + (rollData.roll[1] * 100) + '% - 4px)';
+			
+			values.children[0].innerHTML = rollData.value.toFixed(0) + 'g/s';
+			values.children[1].innerHTML = (rollData.roll[1]*100).toFixed(0) + 'th percentile';
+			/*<span class='rounded-mid double-gauge'>
+				<span class='gauge-top' style='width: calc(55% - 4px);'></span>
+				<span class='gauge-bottom' style='width: calc(95% - 4px);'></span>
+			</span>
+			<span class='rounded-end' style='width:110px;'>
+				<span style='height:50%;top:0%;display:block;line-height:15px;'>140g/s</span>
+				<span style='height:50%;top:50%;display:block;line-height:15px;'>95th percentile</span>
+			</span>*/
+		};
+		window.onload = function() {
+			const volcType = document.getElementById('volcano');
+			const emitRate = document.getElementById('emission');
+			const eruptAmt = document.getElementById('eruptAmt');
+			const eruptLen = document.getElementById('eruptLen');
+			const activeAmt = document.getElementById('activeAmt');
+			const activeLen = document.getElementById('activeLen');
+			//analyze('Gold Volcano', 13100, { amount: 41, length: 877 }, { amount: 75.3*600, length: 117.5*600 }, 300, 540)
+			document.getElementById('submitButton').onclick = function () {
+				const data = analyze(
+					volcType.options[volcType.selectedIndex].text,
+					emitRate.value,
+					{ amount: eruptAmt.value, length: eruptLen.value },
+					{ amount: activeAmt.value * 600, length: activeLen.value * 600 },
+					300,
+					540
+				);
+				updateBars(avgEmit, data.volcano.avgYield);
+				console.log(data);
+			};
+			volcanoes.forEach(volc => {
+				const opt = document.createElement('option');
+				opt.text = volc.name;
+				volcType.add(opt);
+			});
+			const avgEmit = document.getElementById('avgEmit');
+			
+		};
+	</script>
+</head>
+<body style='background:#999;'>
+	<div>
+		<div class='rounded'>
+			<span class='rounded-start'>Volcano type:</span>
+			<select class='rounded-end' id='volcano' style='width:132px;'></select>
+		</div>
+		<br>
+		<div class='rounded'>
+			<span class='rounded-start'>Emission rate:</span>
+			<input class='rounded-mid' id='emission' type='number'>
+			<span class='rounded-end'>g/s</span>
+		</div>
+		<br>
+		<div class='rounded'>
+			<span class='rounded-start'>Eruption:</span>
+			<input class='rounded-mid' id='eruptAmt' type='number'>
+			<span class='rounded-mid'>seconds every</span>
+			<input class='rounded-mid' id='eruptLen' type='number'>
+			<span class='rounded-end'>seconds.</span>
+		</div>
+		<br>
+		<div class='rounded'>
+			<span class='rounded-start'>Activity:</span>
+			<input class='rounded-mid' id='activeAmt' type='number'>
+			<span class='rounded-mid'>cycles every</span>
+			<input class='rounded-mid' id='activeLen' type='number'>
+			<span class='rounded-end'>cycles.</span>
+		</div>
+		<br>
+		<input class='rounded' id='submitButton' type='button' value='Compute!'>
+	</div>
+	<br>
+	<div>
+		<div class='rounded' id='avgEmit'>
+			<span class='rounded-start' style='line-height:15px;'>Average<br>emission rate:</span>
+			<span class='rounded-mid double-gauge'>
+				<span class='gauge-top' style='width: calc(55% - 4px);'></span>
+				<span class='gauge-bottom' style='width: calc(95% - 4px);'></span>
+			</span>
+			<span class='rounded-end' style='width:110px;'>
+				<span style='height:50%;top:0%;display:block;line-height:15px;'>140g/s</span>
+				<span style='height:50%;top:50%;display:block;line-height:15px;'>95th percentile</span>
+			</span>
+		</div>
+	</div>
+</body>

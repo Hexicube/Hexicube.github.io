@@ -1,0 +1,172 @@
+const volcanoes = [
+	{
+		name: 'Minor Volcano',
+		material: 'magma',
+		temp: 1726.85,
+		avgYield: { min: 100, max: 1000 },
+		eruption: {
+			period: { min: 6000, max: 12000 },
+			amount: { min: 0.005, max: 0.01 }
+		},
+		activity: {
+			period: { min: 15000, max: 135000 },
+			amount: { min: 0.4, max: 0.8 }
+		}
+	},
+	{
+		name: 'Volcano',
+		material: 'magma',
+		temp: 1726.85,
+		avgYield: { min: 200, max: 2000 },
+		eruption: {
+			period: { min: 6000, max: 12000 },
+			amount: { min: 0.005, max: 0.01 }
+		},
+		activity: {
+			period: { min: 15000, max: 135000 },
+			amount: { min: 0.4, max: 0.8 }
+		}
+	},
+	{
+		name: 'Copper Volcano',
+		material: 'copper',
+		temp: 2226.85,
+		avgYield: { min: 50, max: 500 },
+		eruption: {
+			period: { min: 480, max: 1080 },
+			amount: { min: 1/60, max: 0.1 }
+		},
+		activity: {
+			period: { min: 15000, max: 135000 },
+			amount: { min: 0.4, max: 0.8 }
+		}
+	},
+	{
+		name: 'Iron Volcano',
+		material: 'iron',
+		temp: 2526.85,
+		avgYield: { min: 50, max: 500 },
+		eruption: {
+			period: { min: 480, max: 1080 },
+			amount: { min: 1/60, max: 0.1 }
+		},
+		activity: {
+			period: { min: 15000, max: 135000 },
+			amount: { min: 0.4, max: 0.8 }
+		}
+	},
+	{
+		name: 'Gold Volcano',
+		material: 'gold',
+		temp: 2626.85,
+		avgYield: { min: 50, max: 500 },
+		eruption: {
+			period: { min: 480, max: 1080 },
+			amount: { min: 1/60, max: 0.1 }
+		},
+		activity: {
+			period: { min: 15000, max: 135000 },
+			amount: { min: 0.4, max: 0.8 }
+		}
+	}
+];
+
+const materials = {
+	crude_oil: {
+		name: 'Crude Oil',
+		spHeat: 1.69,
+		melt: { material: 'petroleum', temp: 400 }
+	},
+	petroleum: {
+		name: 'Petroleum',
+		spHeat: 1.76,
+		melt: { material: 'nat_gas', temp: 540 }
+	},
+	nat_gas: {
+		name: 'Natural Gas',
+		spHeat: 2.191
+	},
+	magma: {
+		name: 'Magma',
+		spHeat: 0.2
+	},
+	copper: {
+		name: 'Copper',
+		spHeat: 0.385
+	},
+	iron: {
+		name: 'Iron',
+		spHeat: 0.449
+	},
+	gold: {
+		name: 'Gold',
+		spHeat: 0.129
+	}
+};
+
+const calcRoll = (low, high, val) => {
+	const val1 = (val-low) / (high-low);
+	if (val1 < 0 || val1 > 1) return [val1];
+	
+	//Inverse of: y = 1 - ((log((1.0 / (x * 0.995054754 + 0.002472623) - 1.0)) + 6) / 12)
+	//This is the function that the game uses to convert raw rolls, causing them to bunch up towards the middle a lot.
+	const pow = Math.pow(Math.E, val1*12);
+	const val2 = 1 - (404.431 - 0.00248491 * pow) / (403.429 + pow);
+	
+	return [val1, val2];
+};
+
+const rollify = (input, data) => {
+	if (typeof data === 'object') {
+		if (data.min) {
+			return { value: input, roll: calcRoll(data.min, data.max, input) };
+		}
+		else {
+			const result = {};
+			Object.keys(input).forEach((key, index) => {
+				result[key] = rollify(input[key], data[key]);
+			});
+			return result;
+		}
+	}
+};
+
+const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
+	let volcano = null;
+	volcanoes.forEach(volc => {
+		if (volc.name === type) {
+			volcano = volc;
+			return;
+		}
+	});
+	if (!volcano) return;
+	
+	const result = {};
+	
+	let data = {};
+	data.eruption = { period: eruption.length, amount: eruption.amount/eruption.length };
+	data.activity = { period: activity.length, amount: activity.amount/activity.length };
+	data.avgYield = rate * data.eruption.amount * data.activity.amount;
+	result.volcano = rollify(data, volcano);
+	result.volcano.name = type;
+	result.volcano.temp = volcano.temp;
+	result.volcano.material = materials[volcano.material];
+	
+	data = {};
+	data.phase1 = { startHeat: startTemp, endHeat: materials.crude_oil.melt.temp, spHeat: materials.crude_oil.spHeat };
+	data.phase1.neededHeat = data.phase1.spHeat * (data.phase1.endHeat - data.phase1.startHeat);
+	data.phase2 = { startHeat: data.phase1.endHeat, endHeat: endTemp, spHeat: materials[materials.crude_oil.melt.material].spHeat };
+	data.phase2.neededHeat = data.phase2.spHeat * (data.phase2.endHeat - data.phase2.startHeat);
+	
+	data.overall = {};
+	data.overall.availHeatPerGram = result.volcano.material.spHeat * (result.volcano.temp - endTemp);
+	data.overall.neededHeat = data.phase1.neededHeat + data.phase2.neededHeat;
+	data.overall.gramRatio = data.overall.availHeatPerGram / data.overall.neededHeat;
+	data.overall.finalRate = data.overall.gramRatio * result.volcano.avgYield.value;
+	data.overall.genCount = data.overall.finalRate / 90;
+	data.overall.powerOutput = data.overall.genCount * 800;
+	
+	result.production = data;
+	
+	return result;
+};
