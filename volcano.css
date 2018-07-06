@@ -1,3 +1,13 @@
+.rounded-basic {
+    border: 2px solid #888;
+	border-style: outset;
+    border-radius: 10px;
+    background-color: whiteSmoke;
+    display: inline-block;
+	margin: 3px;
+	padding: 3px;
+}
+
 .rounded {
     border: 2px solid #888;
 	border-style: outset;
