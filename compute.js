@@ -153,6 +153,15 @@ const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
 	result.volcano.material = materials[volcano.material];
 	
 	data = {};
+	
+	data.preHeat = {};
+	data.preHeat.startTemp = startTemp;
+	data.preHeat.endTemp = endTemp;
+	data.preHeat.neededHeatForPetro = (materials.crude_oil.melt.temp - startTemp) * materials.crude_oil.spHeat;
+	data.preHeat.natGasTempAfterPetro = data.preHeat.endTemp - (data.preHeat.neededHeatForPetro / materials.nat_gas.spHeat);
+	data.preHeat.natGasExtraHeat = (data.preHeat.natGasTempAfterPetro - materials.crude_oil.melt.temp) * materials.nat_gas.spHeat;
+	data.preHeat.finalTemp = materials.crude_oil.melt.temp + ((data.preHeat.natGasExtraHeat / materials[materials.crude_oil.melt.material].spHeat) / 2);
+	
 	data.phase1 = { startHeat: startTemp, endHeat: materials.crude_oil.melt.temp, spHeat: materials.crude_oil.spHeat };
 	data.phase1.neededHeat = data.phase1.spHeat * (data.phase1.endHeat - data.phase1.startHeat);
 	data.phase2 = { startHeat: data.phase1.endHeat, endHeat: endTemp, spHeat: materials[materials.crude_oil.melt.material].spHeat };
@@ -165,6 +174,17 @@ const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
 	data.overall.finalRate = data.overall.gramRatio * result.volcano.avgYield.value;
 	data.overall.genCount = data.overall.finalRate / 90;
 	data.overall.powerOutput = data.overall.genCount * 800;
+	
+	data.phase2x = { startHeat: data.preHeat.finalTemp, endHeat: endTemp, spHeat: materials[materials.crude_oil.melt.material].spHeat };
+	data.phase2x.neededHeat = data.phase2x.spHeat * (data.phase2x.endHeat - data.phase2x.startHeat);
+	
+	data.overallPreHeat = {};
+	data.overallPreHeat.availHeatPerGram = result.volcano.material.spHeat * (result.volcano.temp - endTemp);
+	data.overallPreHeat.neededHeat = data.phase2x.neededHeat;
+	data.overallPreHeat.gramRatio = data.overallPreHeat.availHeatPerGram / data.overallPreHeat.neededHeat;
+	data.overallPreHeat.finalRate = data.overallPreHeat.gramRatio * result.volcano.avgYield.value;
+	data.overallPreHeat.genCount = data.overallPreHeat.finalRate / 90;
+	data.overallPreHeat.powerOutput = data.overallPreHeat.genCount * 800;
 	
 	result.production = data;
 	
