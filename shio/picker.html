@@ -1,0 +1,122 @@
+<!DOCTYPE HTML>
+<head>
+	<script>
+		window.onload = function() {
+			let fasTrack = {};
+			fasTrack.hitlerZone = 3;
+			fasTrack.powers = ["fasPowerInv", "fasPowerElect", "fasPowerPeek", "fasPowerGun", "fasPowerGunVeto"];
+			fasTrack.fasCount = 3;
+			fasTrack.hitKnowsFas = false;
+			
+			const trackMark1 = document.getElementById('hzMark1');
+			const trackMark2 = document.getElementById('hzMark2');
+			const trackMark3 = document.getElementById('hzMark3');
+			const trackMark4 = document.getElementById('hzMark4');
+			const trackMark5 = document.getElementById('hzMark5');
+			
+			function getValue(elem) {
+				return elem.options[elem.selectedIndex].value;
+			}
+			
+			document.applySettings = function() {
+				fasTrack.hitlerZone = getValue(document.getElementById('hzStartControl'));
+				fasTrack.fasCount = getValue(document.getElementById('fasCountControl'));
+				fasTrack.hitKnowsFas = document.getElementById('hitKnowsControl').checked;
+				
+				for(let a = 1; a < 6; a++) {
+					fasTrack.powers[a-1] = getValue(document.getElementById('power'+a+'Control'));
+					document.getElementById('hzMark'+a).style["background-image"] = "url(fasTrackHZ"+((a < fasTrack.hitlerZone) ? "Off" : ((a == fasTrack.hitlerZone) ? "Start" : "On"))+".png)";
+					document.getElementById('hzPow'+a).style["background-image"] = "url("+fasTrack.powers[a-1]+".png)";
+				}
+				document.getElementById('fasTextUpper').style["background-image"] = "url(fasTrack"+fasTrack.fasCount+"fas.png)";
+				document.getElementById('fasTextLower').style["background-image"] = "url(fasTrack"+(fasTrack.fasCount==1?"Single":"Multi")+(fasTrack.hitKnowsFas?"Known":"Unknown")+".png)";
+			}
+			
+			document.applySettings();
+		}
+	</script>
+</head>
+<body style="background-color:#111">
+	<div style="width:650px;height:220px;background-image:url(fasTrack.png)">
+		<span style="width:92px;height:120px;left:137px;top:58px;position:absolute;background-image:url(fasTrackHZOff.png)" id="hzMark1"></span>
+		<span style="width:92px;height:120px;left:229px;top:58px;position:absolute;background-image:url(fasTrackHZOff.png)" id="hzMark2"></span>
+		<span style="width:92px;height:120px;left:321px;top:58px;position:absolute;background-image:url(fasTrackHZStart.png)" id="hzMark3"></span>
+		<span style="width:92px;height:120px;left:413px;top:58px;position:absolute;background-image:url(fasTrackHZOn.png)" id="hzMark4"></span>
+		<span style="width:92px;height:120px;left:505px;top:58px;position:absolute;background-image:url(fasTrackHZOn.png)" id="hzMark5"></span>
+		
+		<span style="width:90px;height:120px;left: 58px;top:58px;position:absolute;background-image:url(fasPowerNone.png)" id="hzPow1"></span>
+		<span style="width:90px;height:120px;left:150px;top:58px;position:absolute;background-image:url(fasPowerNone.png)" id="hzPow2"></span>
+		<span style="width:90px;height:120px;left:242px;top:58px;position:absolute;background-image:url(fasPowerNone.png)" id="hzPow3"></span>
+		<span style="width:90px;height:120px;left:334px;top:58px;position:absolute;background-image:url(fasPowerNone.png)" id="hzPow4"></span>
+		<span style="width:90px;height:120px;left:426px;top:58px;position:absolute;background-image:url(fasPowerNone.png)" id="hzPow5"></span>
+		<span style="width:90px;height:120px;left:518px;top:58px;position:absolute;background-image:url(fasPowerEndGame.png)" id="hzPow6"></span>
+		
+		<span style="width:268px;height:15px;left:336px;top:60px;position:absolute;background-image:url(fasTrackHZText.png)"></span>
+		
+		<span style="width:227px;height:11px;left:220px;top:186px;position:absolute;background-image:url(fasTrack2fas.png)" id="fasTextUpper"></span>
+		<span style="width:227px;height:11px;left:220px;top:196px;position:absolute;background-image:url(fasTrackMultiUnknown.png)" id="fasTextLower"></span>
+	</div>
+	<div id="controls">
+		<select id='hzStartControl' onchange='applySettings()'>
+			<option value='1'>1 card</option>
+			<option value='2'>2 cards</option>
+			<option value='3'>3 cards</option>
+			<option value='4'>4 cards</option>
+			<option value='5'>5 cards</option>
+		</select>
+		<br>
+		<select id='fasCountControl' onchange='applySettings()'>
+			<option value='1'>1 fas + hit</option>
+			<option value='2'>2 fas + hit</option>
+			<option value='3'>3 fas + hit</option>
+		</select>
+		<br>
+		<input type='checkbox' id='hitKnowsControl' onchange='applySettings()'/>
+		<label for="checkbox" style='color:#fff;'>Hit Knows Fas</label>
+		<br>
+		<select id='power1Control' onchange='applySettings()'>
+			<option value='fasPowerNone'>No Power</option>
+			<option value='fasPowerInv'>Investigate</option>
+			<option value='fasPowerPeek'>Deck Peek</option>
+			<option value='fasPowerElect'>Special Election</option>
+			<option value='fasPowerGun'>Bullet</option>
+			<option value='fasPowerGunVeto'>Bullet + Veto</option>
+		</select>
+		<br>
+		<select id='power2Control' onchange='applySettings()'>
+			<option value='fasPowerNone'>No Power</option>
+			<option value='fasPowerInv'>Investigate</option>
+			<option value='fasPowerPeek'>Deck Peek</option>
+			<option value='fasPowerElect'>Special Election</option>
+			<option value='fasPowerGun'>Bullet</option>
+			<option value='fasPowerGunVeto'>Bullet + Veto</option>
+		</select>
+		<br>
+		<select id='power3Control' onchange='applySettings()'>
+			<option value='fasPowerNone'>No Power</option>
+			<option value='fasPowerInv'>Investigate</option>
+			<option value='fasPowerPeek'>Deck Peek</option>
+			<option value='fasPowerElect'>Special Election</option>
+			<option value='fasPowerGun'>Bullet</option>
+			<option value='fasPowerGunVeto'>Bullet + Veto</option>
+		</select>
+		<br>
+		<select id='power4Control' onchange='applySettings()'>
+			<option value='fasPowerNone'>No Power</option>
+			<option value='fasPowerInv'>Investigate</option>
+			<option value='fasPowerPeek'>Deck Peek</option>
+			<option value='fasPowerElect'>Special Election</option>
+			<option value='fasPowerGun'>Bullet</option>
+			<option value='fasPowerGunVeto'>Bullet + Veto</option>
+		</select>
+		<br>
+		<select id='power5Control' onchange='applySettings()'>
+			<option value='fasPowerNone'>No Power</option>
+			<option value='fasPowerInv'>Investigate</option>
+			<option value='fasPowerPeek'>Deck Peek</option>
+			<option value='fasPowerElect'>Special Election</option>
+			<option value='fasPowerGun'>Bullet</option>
+			<option value='fasPowerGunVeto'>Bullet + Veto</option>
+		</select>
+	</div>
+</body>
