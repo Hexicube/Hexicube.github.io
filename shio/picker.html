@@ -1,10 +1,12 @@
 <!DOCTYPE HTML>
 <head>
+	<link rel="stylesheet" href="picker.css">
 	<script>
 		window.onload = function() {
 			let fasTrack = {};
 			fasTrack.hitlerZone = 3;
-			fasTrack.powers = ["fasPowerInv", "fasPowerElect", "fasPowerPeek", "fasPowerGun", "fasPowerGunVeto"];
+			fasTrack.vetoZone = 5;
+			fasTrack.powers = ["fasPowerInv", "fasPowerElect", "fasPowerPeek", "fasPowerGun"];
 			fasTrack.fasCount = 3;
 			fasTrack.hitKnowsFas = false;
 			
@@ -18,18 +20,31 @@
 				return elem.options[elem.selectedIndex].value;
 			}
 			
+			function powerText(pow) {
+				if (pow == 'fasPowerNone') return '<br><br>';
+				if (pow == 'fasPowerInv') return 'THE PRESIDENT<br>INVESTIGATES<br>A PLAYER';
+				if (pow == 'fasPowerPeek') return 'THE PRESIDENT<br>EXAMINES THE<br>TOP THREE CARDS';
+				if (pow == 'fasPowerElect') return 'THE PRESIDENT<br>PICKS THE NEXT<br>PRESIDENT';
+				if (pow == 'fasPowerGun') return 'THE PRESIDENT<br>KILLS A PLAYER<br>';
+				return pow;
+			}
+			
 			document.applySettings = function() {
 				fasTrack.hitlerZone = getValue(document.getElementById('hzStartControl'));
+				fasTrack.vetoZone = getValue(document.getElementById('vzStartControl'));
 				fasTrack.fasCount = getValue(document.getElementById('fasCountControl'));
 				fasTrack.hitKnowsFas = document.getElementById('hitKnowsControl').checked;
 				
 				for(let a = 1; a < 6; a++) {
 					fasTrack.powers[a-1] = getValue(document.getElementById('power'+a+'Control'));
 					document.getElementById('hzMark'+a).style["background-image"] = "url(fasTrackHZ"+((a < fasTrack.hitlerZone) ? "Off" : ((a == fasTrack.hitlerZone) ? "Start" : "On"))+".png)";
-					document.getElementById('hzPow'+a).style["background-image"] = "url("+fasTrack.powers[a-1]+".png)";
+					document.getElementById('hzPow'+a).style["background-image"] = (a == fasTrack.vetoZone && fasTrack.powers[a-1] == "fasPowerNone") ? '' : "url("+fasTrack.powers[a-1]+".png)";
+					
+					document.getElementById('hzPow'+a).innerHTML = '<br><br><br><br><br><br><br><br><br>' + powerText(fasTrack.powers[a-1]) + (a == fasTrack.vetoZone ? '<br>VETO UNLOCKED' : '');
+					document.getElementById('hzPow'+a).className = (a > fasTrack.hitlerZone) ? 'sf-back' : 'sf-front';
 				}
-				document.getElementById('fasTextUpper').style["background-image"] = "url(fasTrack"+fasTrack.fasCount+"fas.png)";
-				document.getElementById('fasTextLower').style["background-image"] = "url(fasTrack"+(fasTrack.fasCount==1?"Single":"Multi")+(fasTrack.hitKnowsFas?"Known":"Unknown")+".png)";
+				document.getElementById('fasTextUpper').innerHTML = 'PLAY WITH ' + fasTrack.fasCount + (fasTrack.fasCount == 1 ? ' FASCIST' : ' FASCISTS' ) + ' AND HITLER';
+				document.getElementById('fasTextLower').innerHTML = 'HITLER ' + (fasTrack.hitKnowsFas ? 'KNOWS' : 'DOESN\'T KNOW') + ' WHO THE ' + (fasTrack.fasCount == 1 ? 'FASCIST IS' : 'FASCISTS ARE');
 			}
 			
 			document.applySettings();
@@ -53,21 +68,29 @@
 		
 		<span style="width:268px;height:15px;left:336px;top:60px;position:absolute;background-image:url(fasTrackHZText.png)"></span>
 		
-		<span style="width:227px;height:11px;left:220px;top:186px;position:absolute;background-image:url(fasTrack2fas.png)" id="fasTextUpper"></span>
-		<span style="width:227px;height:11px;left:220px;top:196px;position:absolute;background-image:url(fasTrackMultiUnknown.png)" id="fasTextLower"></span>
+		<span class="sf-front" style="width:228px;height:11px;left:220px;top:186px;position:absolute" id="fasTextUpper">PLAY WITH 1 FASCIST AND HITLER</span>
+		<span class="sf-front" style="width:228px;height:11px;left:220px;top:196px;position:absolute" id="fasTextLower">HITLER DOESN'T KNOW WHO THE FASCIST IS</span>
 	</div>
 	<div id="controls">
 		<select id='hzStartControl' onchange='applySettings()'>
-			<option value='1'>1 card</option>
-			<option value='2'>2 cards</option>
-			<option value='3'>3 cards</option>
-			<option value='4'>4 cards</option>
-			<option value='5'>5 cards</option>
+			<option value='1'>HZ: 1 card</option>
+			<option value='2'>HZ: 2 cards</option>
+			<option value='3' selected="selected">HZ: 3 cards</option>
+			<option value='4'>HZ: 4 cards</option>
+			<option value='5'>HZ: 5 cards</option>
+		</select>
+		<br>
+		<select id='vzStartControl' onchange='applySettings()'>
+			<option value='1'>VZ: 1 card</option>
+			<option value='2'>VZ: 2 cards</option>
+			<option value='3'>VZ: 3 cards</option>
+			<option value='4'>VZ: 4 cards</option>
+			<option value='5' selected="selected">VZ: 5 cards</option>
 		</select>
 		<br>
 		<select id='fasCountControl' onchange='applySettings()'>
 			<option value='1'>1 fas + hit</option>
-			<option value='2'>2 fas + hit</option>
+			<option value='2' selected="selected">2 fas + hit</option>
 			<option value='3'>3 fas + hit</option>
 		</select>
 		<br>
@@ -75,30 +98,27 @@
 		<label for="checkbox" style='color:#fff;'>Hit Knows Fas</label>
 		<br>
 		<select id='power1Control' onchange='applySettings()'>
-			<option value='fasPowerNone'>No Power</option>
+			<option value='fasPowerNone' selected="selected">No Power</option>
 			<option value='fasPowerInv'>Investigate</option>
 			<option value='fasPowerPeek'>Deck Peek</option>
 			<option value='fasPowerElect'>Special Election</option>
 			<option value='fasPowerGun'>Bullet</option>
-			<option value='fasPowerGunVeto'>Bullet + Veto</option>
 		</select>
 		<br>
 		<select id='power2Control' onchange='applySettings()'>
-			<option value='fasPowerNone'>No Power</option>
+			<option value='fasPowerNone' selected="selected">No Power</option>
 			<option value='fasPowerInv'>Investigate</option>
 			<option value='fasPowerPeek'>Deck Peek</option>
 			<option value='fasPowerElect'>Special Election</option>
 			<option value='fasPowerGun'>Bullet</option>
-			<option value='fasPowerGunVeto'>Bullet + Veto</option>
 		</select>
 		<br>
 		<select id='power3Control' onchange='applySettings()'>
 			<option value='fasPowerNone'>No Power</option>
-			<option value='fasPowerInv'>Investigate</option>
+			<option value='fasPowerInv' selected="selected">Investigate</option>
 			<option value='fasPowerPeek'>Deck Peek</option>
 			<option value='fasPowerElect'>Special Election</option>
 			<option value='fasPowerGun'>Bullet</option>
-			<option value='fasPowerGunVeto'>Bullet + Veto</option>
 		</select>
 		<br>
 		<select id='power4Control' onchange='applySettings()'>
@@ -106,8 +126,7 @@
 			<option value='fasPowerInv'>Investigate</option>
 			<option value='fasPowerPeek'>Deck Peek</option>
 			<option value='fasPowerElect'>Special Election</option>
-			<option value='fasPowerGun'>Bullet</option>
-			<option value='fasPowerGunVeto'>Bullet + Veto</option>
+			<option value='fasPowerGun' selected="selected">Bullet</option>
 		</select>
 		<br>
 		<select id='power5Control' onchange='applySettings()'>
@@ -115,8 +134,7 @@
 			<option value='fasPowerInv'>Investigate</option>
 			<option value='fasPowerPeek'>Deck Peek</option>
 			<option value='fasPowerElect'>Special Election</option>
-			<option value='fasPowerGun'>Bullet</option>
-			<option value='fasPowerGunVeto'>Bullet + Veto</option>
+			<option value='fasPowerGun' selected="selected">Bullet</option>
 		</select>
 	</div>
 </body>
