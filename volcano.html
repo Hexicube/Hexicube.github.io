@@ -73,12 +73,20 @@
 					else extraData.innerHTML = 'Not a volcano.';
 				}
 			};
-			volcanoes.forEach(volc => {
-				const opt = document.createElement('option');
-				opt.text = volc.name;
-				volcType.add(opt);
-			});
-			
+			const makeGroup = (data, name) => {
+				const optGroup = document.createElement('optgroup');
+				console.log(typeof optGroup);
+				optGroup.label = name;
+				volcType.add(optGroup);
+				data.forEach(volc => {
+					const opt = document.createElement('option');
+					opt.text = volc.name;
+					optGroup.appendChild(opt);
+				});
+			};
+			makeGroup(volcanoes.gas, 'Vents');
+			makeGroup(volcanoes.liq, 'Geysers');
+			makeGroup(volcanoes.volc, 'Volcanoes');
 		};
 	</script>
 </head>
