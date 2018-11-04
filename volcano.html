@@ -37,37 +37,40 @@
 				if(data) {
 					console.log(data);
 					updateBars(avgEmit, data.volcano.avgYield);
-					extraData.innerHTML = 
-										  'Heat available per gram of volcano output: ' +
-										  data.production.overall.availHeatPerGram + '<br><br>' +
-										  'Heat required to heat 300C crude oil to 540C natural gas: ' +
-										  data.production.overall.neededHeat + '<br>' +
-										  'Heat ratio: ' +
-										  data.production.overall.gramRatio.toFixed(4) + '<br>' +
-										  'Maximum natural gas production: ' +
-										  data.production.overall.finalRate.toFixed(4) + 'g/s<br>' +
-										  'Number of generators required: ' +
-										  data.production.overall.genCount.toFixed(4) + '<br>' +
-										  'Power output: ' +
-										  data.production.overall.powerOutput.toFixed(2) + 'W<br><br>' +
-										  'Heat required to heat 300C crude oil to 400C petroleum: ' +
-										  data.production.preHeat.neededHeatForPetro + '<br>' +
-										  'Natural gas temperature after converting crude oil to petroleum: ' +
-										  data.production.preHeat.natGasTempAfterPetro.toFixed(4) + 'C<br>' +
-										  'Final pre-heat temperature: ' +
-										  data.production.preHeat.finalTemp.toFixed(4) + 'C<br><br>' +
-										  'Heat required to heat pre-heated ' +
-										  data.production.preHeat.finalTemp.toFixed(4) +
-										  'C petroleum to 540C natural gas: ' +
-										  data.production.overallPreHeat.neededHeat + '<br>' +
-										  'Heat ratio when pre-heating: ' +
-										  data.production.overallPreHeat.gramRatio.toFixed(4) + '<br>' +
-										  'Maximum natural gas production: ' +
-										  data.production.overallPreHeat.finalRate.toFixed(4) + 'g/s<br>' +
-										  'Number of generators required: ' +
-										  data.production.overallPreHeat.genCount.toFixed(4) + '<br>' +
-										  'Power output: ' +
-										  data.production.overallPreHeat.powerOutput.toFixed(2) + 'W';
+					if (data.production) {
+						extraData.innerHTML = 
+											  'Heat available per gram of volcano output: ' +
+											  data.production.overall.availHeatPerGram + '<br><br>' +
+											  'Heat required to heat 300C crude oil to 540C natural gas: ' +
+											  data.production.overall.neededHeat + '<br>' +
+											  'Heat ratio: ' +
+											  data.production.overall.gramRatio.toFixed(4) + '<br>' +
+											  'Maximum natural gas production: ' +
+											  data.production.overall.finalRate.toFixed(4) + 'g/s<br>' +
+											  'Number of generators required: ' +
+											  data.production.overall.genCount.toFixed(4) + '<br>' +
+											  'Power output: ' +
+											  data.production.overall.powerOutput.toFixed(2) + 'W<br><br>' +
+											  'Heat required to heat 300C crude oil to 400C petroleum: ' +
+											  data.production.preHeat.neededHeatForPetro + '<br>' +
+											  'Natural gas temperature after converting crude oil to petroleum: ' +
+											  data.production.preHeat.natGasTempAfterPetro.toFixed(4) + 'C<br>' +
+											  'Final pre-heat temperature: ' +
+											  data.production.preHeat.finalTemp.toFixed(4) + 'C<br><br>' +
+											  'Heat required to heat pre-heated ' +
+											  data.production.preHeat.finalTemp.toFixed(4) +
+											  'C petroleum to 540C natural gas: ' +
+											  data.production.overallPreHeat.neededHeat + '<br>' +
+											  'Heat ratio when pre-heating: ' +
+											  data.production.overallPreHeat.gramRatio.toFixed(4) + '<br>' +
+											  'Maximum natural gas production: ' +
+											  data.production.overallPreHeat.finalRate.toFixed(4) + 'g/s<br>' +
+											  'Number of generators required: ' +
+											  data.production.overallPreHeat.genCount.toFixed(4) + '<br>' +
+											  'Power output: ' +
+											  data.production.overallPreHeat.powerOutput.toFixed(2) + 'W';
+					}
+					else extraData.innerHTML = 'Not a volcano.';
 				}
 			};
 			volcanoes.forEach(volc => {
@@ -82,7 +85,7 @@
 <body style='background:#999;'>
 	<div>
 		<div class='rounded'>
-			<span class='rounded-start'>Volcano type:</span>
+			<span class='rounded-start'>Geyser type:</span>
 			<select class='rounded-end' id='volcano' style='width:132px;'></select>
 		</div>
 		<br>

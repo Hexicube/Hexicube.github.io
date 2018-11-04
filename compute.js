@@ -1,74 +1,142 @@
+const normalActivity = {
+	period: { min: 15000, max: 135000 },
+	amount: { min: 0.4, max: 0.8 }
+};
+const volcanoEruption = {
+	period: { min: 6000, max: 12000 },
+	amount: { min: 0.005, max: 0.01 }
+};
+const metalEruption = {
+	period: { min: 480, max: 1080 },
+	amount: { min: 1/60, max: 0.1 }
+};
+const normalEruption = {
+	period: { min: 60, max: 1140 },
+	amount: { min: 0.1, max: 0.9 }
+};
+
 const volcanoes = [
+	{
+		name: 'Cool Steam Vent',
+		avgYield: { min: 200, max: 2500 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Steam Vent (500C)',
+		avgYield: { min: 10, max: 100 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Water Geyser',
+		avgYield: { min: 500, max: 5000 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Cool Slush Geyser',
+		avgYield: { min: 500, max: 5000 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Polluted Water Vent',
+		avgYield: { min: 500, max: 5000 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
 	{
 		name: 'Minor Volcano',
 		material: 'magma',
 		temp: 1726.85,
 		avgYield: { min: 100, max: 1000 },
-		eruption: {
-			period: { min: 6000, max: 12000 },
-			amount: { min: 0.005, max: 0.01 }
-		},
-		activity: {
-			period: { min: 15000, max: 135000 },
-			amount: { min: 0.4, max: 0.8 }
-		}
+		eruption: volcanoEruption,
+		activity: normalActivity
 	},
 	{
 		name: 'Volcano',
 		material: 'magma',
 		temp: 1726.85,
 		avgYield: { min: 200, max: 2000 },
-		eruption: {
-			period: { min: 6000, max: 12000 },
-			amount: { min: 0.005, max: 0.01 }
-		},
-		activity: {
-			period: { min: 15000, max: 135000 },
-			amount: { min: 0.4, max: 0.8 }
-		}
+		eruption: volcanoEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Carbon Dioxide Geyser',
+		avgYield: { min: 3, max: 30 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Carbin Dioxide Vent',
+		avgYield: { min: 5, max: 50 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Hydrogen Vent',
+		avgYield: { min: 5, max: 50 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Hot Polluted Oxygen Vent',
+		avgYield: { min: 15, max: 180 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Infectious Polluted Oxygen Vent',
+		avgYield: { min: 15, max: 180 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Chlorine Gas Vent',
+		avgYield: { min: 15, max: 180 },
+		eruption: normalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Natural Gas Geyser',
+		avgYield: { min: 15, max: 180 },
+		eruption: normalEruption,
+		activity: normalActivity
 	},
 	{
 		name: 'Copper Volcano',
 		material: 'copper',
 		temp: 2226.85,
 		avgYield: { min: 50, max: 500 },
-		eruption: {
-			period: { min: 480, max: 1080 },
-			amount: { min: 1/60, max: 0.1 }
-		},
-		activity: {
-			period: { min: 15000, max: 135000 },
-			amount: { min: 0.4, max: 0.8 }
-		}
+		eruption: metalEruption,
+		activity: normalActivity
 	},
 	{
 		name: 'Iron Volcano',
 		material: 'iron',
 		temp: 2526.85,
 		avgYield: { min: 50, max: 500 },
-		eruption: {
-			period: { min: 480, max: 1080 },
-			amount: { min: 1/60, max: 0.1 }
-		},
-		activity: {
-			period: { min: 15000, max: 135000 },
-			amount: { min: 0.4, max: 0.8 }
-		}
+		eruption: metalEruption,
+		activity: normalActivity
 	},
 	{
 		name: 'Gold Volcano',
 		material: 'gold',
 		temp: 2626.85,
 		avgYield: { min: 50, max: 500 },
+		eruption: metalEruption,
+		activity: normalActivity
+	},
+	{
+		name: 'Leaky Oil Fissure',
+		avgYield: { min: 1, max: 250 },
 		eruption: {
-			period: { min: 480, max: 1080 },
-			amount: { min: 1/60, max: 0.1 }
+			period: { min: 600, max: 600 },
+			amount: { min: 1, max: 1 }
 		},
-		activity: {
-			period: { min: 15000, max: 135000 },
-			amount: { min: 0.4, max: 0.8 }
-		}
-	}
+		activity: normalActivity
+	},
 ];
 
 const materials = {
@@ -149,6 +217,7 @@ const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
 	data.avgYield = rate * data.eruption.amount * data.activity.amount;
 	result.volcano = rollify(data, volcano);
 	result.volcano.name = type;
+	if (!volcano.material) return result;
 	result.volcano.temp = volcano.temp;
 	result.volcano.material = materials[volcano.material];
 	
