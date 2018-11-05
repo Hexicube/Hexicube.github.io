@@ -207,7 +207,7 @@ const rollify = (input, data) => {
 
 const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
 	let volcano = null;
-	volcanoes.forEach(volc => {
+	[...volcanoes.gas, ...volcanoes.liq, ...volcanoes.volc].forEach(volc => {
 		if (volc.name === type) {
 			volcano = volc;
 			return;
