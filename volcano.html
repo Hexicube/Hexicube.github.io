@@ -12,7 +12,9 @@
 			bars.children[1].style.width = 'calc(' + (rollData.roll[1] * 100) + '% - 4px)';
 			
 			values.children[0].innerHTML = rollData.value.toFixed(0) + 'g/s';
+			values.children[0].title = rollData.value + 'g/s';
 			values.children[1].innerHTML = (rollData.roll[1]*100).toFixed(2) + '%';
+			values.children[1].title = (rollData.roll[1]*100) + '%';
 		};
 		window.onload = function() {
 			const volcType = document.getElementById('volcano');
