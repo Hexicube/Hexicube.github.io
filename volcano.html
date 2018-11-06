@@ -17,6 +17,8 @@
 			values.children[1].title = (rollData.roll[1]*100) + '%';
 		};
 		window.onload = function() {
+			const url = new URL(window.location.href);
+			
 			const volcType = document.getElementById('volcano');
 			const emitRate = document.getElementById('emission');
 			const eruptAmt = document.getElementById('eruptAmt');
@@ -26,8 +28,7 @@
 			
 			const avgEmit = document.getElementById('avgEmit');
 			const extraData = document.getElementById('extraData');
-			//analyze('Gold Volcano', 13100, { amount: 41, length: 877 }, { amount: 75.3*600, length: 117.5*600 }, 300, 540)
-			document.getElementById('submitButton').onclick = function () {
+			const doCalc = () => {
 				const data = analyze(
 					volcType.options[volcType.selectedIndex].text,
 					emitRate.value,
@@ -37,6 +38,13 @@
 					540
 				);
 				if(data) {
+					url.searchParams.set('type', volcType.options[volcType.selectedIndex].text);
+					url.searchParams.set('emit', emitRate.value);
+					url.searchParams.set('erupt1', eruptAmt.value);
+					url.searchParams.set('erupt2', eruptLen.value);
+					url.searchParams.set('active1', activeAmt.value);
+					url.searchParams.set('active2', activeLen.value);
+					window.history.pushState({}, '', url);
 					console.log(data);
 					updateBars(avgEmit, data.volcano.avgYield);
 					if (data.production) {
@@ -75,6 +83,7 @@
 					else extraData.innerHTML = 'Not a volcano.';
 				}
 			};
+			document.getElementById('submitButton').onclick = doCalc;
 			const makeGroup = (data, name) => {
 				const optGroup = document.createElement('optgroup');
 				optGroup.label = name;
@@ -88,6 +97,22 @@
 			makeGroup(volcanoes.gas, 'Vents');
 			makeGroup(volcanoes.liq, 'Geysers');
 			makeGroup(volcanoes.volc, 'Volcanoes');
+			
+			const setIfExists = (type, field) => {
+				if (url.searchParams.has(type)) {
+					field.value = url.searchParams.get(type);
+					return true;
+				}
+				return false;
+			};
+			let allExist = true;
+			allExist &= setIfExists('type', volcType);
+			allExist &= setIfExists('emit', emitRate);
+			allExist &= setIfExists('erupt1', eruptAmt);
+			allExist &= setIfExists('erupt2', eruptLen);
+			allExist &= setIfExists('active1', activeAmt);
+			allExist &= setIfExists('active2', activeLen);
+			if(allExist) doCalc();
 		};
 	</script>
 </head>
