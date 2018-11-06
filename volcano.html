@@ -4,12 +4,44 @@
 	<link rel="stylesheet" href="volcano.css">
 	<script src='compute.js'></script>
 	<script>
-		const updateBars = (elem, rollData) => {
+		let geyserData = [];
+		let selectedGeyser = -1;
+		
+		const parseData = (data) => {
+			if (!data.includes('_')) geyserData = JSON.parse(data);
+			geyserData = [];
+			const partial = data.split('_');
+			for (let a = 0; a < 12; a++) {
+				geyserData[a] = partial[a].split('~');
+				geyserData[a][1] = parseFloat(geyserData[a][1]);
+				geyserData[a][2] = parseFloat(geyserData[a][2]);
+				geyserData[a][3] = parseFloat(geyserData[a][3]);
+				geyserData[a][4] = parseFloat(geyserData[a][4]);
+				geyserData[a][5] = parseFloat(geyserData[a][5]);
+			}
+		};
+		const formatData = () => {
+			let result = [];
+			for (let a = 0; a < 12; a++) {
+				const innerData = (geyserData[a] && geyserData[a][5] && geyserData[a]) || ['','','','','',''];
+				result[a] = innerData.join('~');
+			}
+			return result.join('_');
+		};
+		
+		const niceBarNumber = (val) => {
+			if (isNaN(val) || val < 0) return 0;
+			if (val > 1) return 1;
+			return val;
+		};
+		const updateBars = (elem, rollData, name) => {
+			if (name) elem.children[0].innerHTML = name;
+			
 			const bars = elem.children[1];
 			const values = elem.children[2];
 			
-			bars.children[0].style.width = 'calc(' + (rollData.roll[0] * 100) + '% - 4px)';
-			bars.children[1].style.width = 'calc(' + (rollData.roll[1] * 100) + '% - 4px)';
+			bars.children[0].style.width = 'calc(' + niceBarNumber(rollData.roll[0]) * 100 + '% - 4px)';
+			bars.children[1].style.width = 'calc(' + niceBarNumber(rollData.roll[1]) * 100 + '% - 4px)';
 			
 			values.children[0].innerHTML = rollData.value.toFixed(0) + 'g/s';
 			values.children[0].title = rollData.value + 'g/s';
@@ -17,6 +49,7 @@
 			values.children[1].title = (rollData.roll[1]*100) + '%';
 		};
 		window.onload = function() {
+			const geyserBars = [];
 			const url = new URL(window.location.href);
 			
 			const volcType = document.getElementById('volcano');
@@ -38,15 +71,18 @@
 					540
 				);
 				if(data) {
-					url.searchParams.set('type', volcType.options[volcType.selectedIndex].text);
-					url.searchParams.set('emit', emitRate.value);
-					url.searchParams.set('erupt1', eruptAmt.value);
-					url.searchParams.set('erupt2', eruptLen.value);
-					url.searchParams.set('active1', activeAmt.value);
-					url.searchParams.set('active2', activeLen.value);
+					geyserData[selectedGeyser] = [
+						volcType.options[volcType.selectedIndex].text,
+						parseFloat(emitRate.value),
+						parseFloat(eruptAmt.value),
+						parseFloat(eruptLen.value),
+						parseFloat(activeAmt.value),
+						parseFloat(activeLen.value)
+					];
+					url.searchParams.set('data', formatData());
 					window.history.pushState({}, '', url);
-					console.log(data);
 					updateBars(avgEmit, data.volcano.avgYield);
+					updateBars(geyserBars[selectedGeyser], data.volcano.avgYield, data.volcano.name);
 					if (data.production) {
 						extraData.innerHTML = 
 											  'Heat available per gram of volcano output: ' +
@@ -82,6 +118,7 @@
 					}
 					else extraData.innerHTML = 'Not a volcano.';
 				}
+				else updateBars(avgEmit, { roll: [ 0, 0 ], value: 0 });
 			};
 			document.getElementById('submitButton').onclick = doCalc;
 			const makeGroup = (data, name) => {
@@ -98,68 +135,124 @@
 			makeGroup(volcanoes.liq, 'Geysers');
 			makeGroup(volcanoes.volc, 'Volcanoes');
 			
-			const setIfExists = (type, field) => {
-				if (url.searchParams.has(type)) {
-					field.value = url.searchParams.get(type);
-					return true;
+			if (url.searchParams.has('data')) parseData(url.searchParams.get('data'));
+			const handleCheck = (id) => {
+				selectedGeyser = id;
+				for (let a = 0; a < 12; a++) {
+					if (a == id) {
+						geyserBars[a].children[3].children[0].checked = true;
+						if (!geyserData[a]) geyserData[a] = [];
+						if (geyserData[a][5]) {
+							volcType.value = geyserData[a][0];
+							emitRate.value = geyserData[a][1];
+							eruptAmt.value = geyserData[a][2];
+							eruptLen.value = geyserData[a][3];
+							activeAmt.value = geyserData[a][4];
+							activeLen.value = geyserData[a][5];
+						}
+						else {
+							volcType.value = 'Cool Steam Vent';
+							emitRate.value = '';
+							eruptAmt.value = '';
+							eruptLen.value = '';
+							activeAmt.value = '';
+							activeLen.value = '';
+						}
+						doCalc();
+					}
+					else geyserBars[a].children[3].children[0].checked = false;
 				}
-				return false;
 			};
-			let allExist = true;
-			allExist &= setIfExists('type', volcType);
-			allExist &= setIfExists('emit', emitRate);
-			allExist &= setIfExists('erupt1', eruptAmt);
-			allExist &= setIfExists('erupt2', eruptLen);
-			allExist &= setIfExists('active1', activeAmt);
-			allExist &= setIfExists('active2', activeLen);
-			if(allExist) doCalc();
+			geyserBars[0] = document.getElementById('geyser1');
+			for (let a = 1; a < 12; a++) {
+				const newBars = geyserBars[0].cloneNode(true);
+				newBars.id = 'geyser' + (a+1);
+				newBars.children[3].children[0].id = 'geyser' + (a+1) + 'radio';
+				geyserBars[0].parentElement.appendChild(newBars);
+				geyserBars[a] = newBars;
+			}
+			for (let a = 0; a < 12; a++) {
+				const thisID = a;
+				geyserBars[a].children[3].children[0].addEventListener('change', () => {
+					handleCheck(thisID);
+				});
+				if (geyserData[a] && geyserData[a][5]) {
+					const data = analyze(
+						geyserData[a][0],
+						geyserData[a][1],
+						{ amount: geyserData[a][2], length: geyserData[a][3] },
+						{ amount: geyserData[a][4] * 600, length: geyserData[a][5] * 600 },
+						300,
+						540
+					);
+					if(data) updateBars(geyserBars[a], data.volcano.avgYield, data.volcano.name);
+				}
+			}
+			handleCheck(0);
 		};
 	</script>
 </head>
 <body style='background:#999;'>
-	<div>
-		<div class='rounded'>
-			<span class='rounded-start'>Geyser type:</span>
-			<select class='rounded-end' id='volcano' style='width:133px;'></select>
+	<span style='display: flex'>
+		<div>
+			<div class='rounded'>
+				<span class='rounded-start'>Geyser type:</span>
+				<select class='rounded-end' id='volcano' style='width:133px;'></select>
+			</div>
+			<div class='rounded'>
+				<span class='rounded-start'>Eruption:</span>
+				<input class='rounded-mid' id='eruptAmt' type='number'>
+				<span class='rounded-mid'>seconds every</span>
+				<input class='rounded-mid' id='eruptLen' type='number'>
+				<span class='rounded-end'>seconds.</span>
+			</div>
+			<br>
+			<div class='rounded'>
+				<span class='rounded-start'>Emission rate:</span>
+				<input class='rounded-mid' id='emission' type='number'>
+				<span class='rounded-end'>g/s</span>
+			</div>
+			<div class='rounded'>
+				<span class='rounded-start'>Activity:</span>
+				<input class='rounded-mid' id='activeAmt' type='number'>
+				<span class='rounded-mid'>cycles every</span>
+				<input class='rounded-mid' id='activeLen' type='number'>
+				<span class='rounded-end'>cycles.</span>
+			</div>
+			<br>
+			<div class='rounded' id='avgEmit'>
+				<span class='rounded-start' style='line-height:15px;'>Average<br>emission rate:</span>
+				<span class='rounded-mid double-gauge'>
+					<span class='gauge-top' style='width: calc(0% - 4px);'></span>
+					<span class='gauge-bottom' style='width: calc(0% - 4px);'></span>
+				</span>
+				<span class='rounded-end'>
+					<span style='height:50%;top:0%;display:block;line-height:15px;'>0g/s</span>
+					<span style='height:50%;top:50%;display:block;line-height:15px;'>0%</span>
+				</span>
+			</div>
+			<br>
+			<input class='rounded' id='submitButton' type='button' value='Compute!'>
+			<br>
+			<div class='rounded-basic' id='extraData' style='display: none'>
+				Power production info will appear here.
+			</div>
 		</div>
-		<div class='rounded'>
-			<span class='rounded-start'>Eruption:</span>
-			<input class='rounded-mid' id='eruptAmt' type='number'>
-			<span class='rounded-mid'>seconds every</span>
-			<input class='rounded-mid' id='eruptLen' type='number'>
-			<span class='rounded-end'>seconds.</span>
-		</div>
-		<br>
-		<div class='rounded'>
-			<span class='rounded-start'>Emission rate:</span>
-			<input class='rounded-mid' id='emission' type='number'>
-			<span class='rounded-end'>g/s</span>
-		</div>
-		<div class='rounded'>
-			<span class='rounded-start'>Activity:</span>
-			<input class='rounded-mid' id='activeAmt' type='number'>
-			<span class='rounded-mid'>cycles every</span>
-			<input class='rounded-mid' id='activeLen' type='number'>
-			<span class='rounded-end'>cycles.</span>
-		</div>
-		<br>
-		<div class='rounded' id='avgEmit'>
-			<span class='rounded-start' style='line-height:15px;'>Average<br>emission rate:</span>
+	</span>
+	<span style='display: inline-grid'>
+		<div class='rounded' id='geyser1' style='display: flex'>
+			<span class='rounded-start' style='line-height:15px; width: 150px; text-align: middle'></span>
 			<span class='rounded-mid double-gauge'>
 				<span class='gauge-top' style='width: calc(0% - 4px);'></span>
 				<span class='gauge-bottom' style='width: calc(0% - 4px);'></span>
 			</span>
-			<span class='rounded-end'>
+			<span class='rounded-mid'>
 				<span style='height:50%;top:0%;display:block;line-height:15px;'>0g/s</span>
 				<span style='height:50%;top:50%;display:block;line-height:15px;'>0%</span>
 			</span>
+			<span class='rounded-end' style='border-left: 2px solid #99f; background-color: #a9e7ff; width: 28px'>
+				<input id='geyser1radio' style='vertical-align: middle' type='radio' />
+			</span>
 		</div>
-		<br>
-		<input class='rounded' id='submitButton' type='button' value='Compute!'>
-		<br>
-		<div class='rounded-basic' id='extraData' style='display: none'>
-			Power production info will appear here.
-		</div>
-	</div>
-	<br>
+	</span>
 </body>
