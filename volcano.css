@@ -54,7 +54,7 @@
 .double-gauge {
     border: 1px solid #ccc;
     background-color: whiteSmoke;
-    width: 300px;
+    width: 487px;
 	height: calc(100% - 2px);
     display: inline-block;
 }
