@@ -19,48 +19,56 @@ const volcanoes = {
 	gas: [
 		{
 			name: 'Cool Steam Vent',
+			shortName: 'SteamCold',
 			avgYield: { min: 200, max: 2500 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Steam Vent (500C)',
+			shortName: 'SteamHot',
 			avgYield: { min: 10, max: 100 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Carbon Dioxide Vent',
+			shortName: 'CO2Vent',
 			avgYield: { min: 5, max: 50 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Hydrogen Vent',
+			shortName: 'HVent',
 			avgYield: { min: 5, max: 50 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Hot Polluted Oxygen Vent',
+			shortName: 'PO2',
 			avgYield: { min: 15, max: 180 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Infectious Polluted Oxygen Vent',
+			shortName: 'IPO2',
 			avgYield: { min: 15, max: 180 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Chlorine Gas Vent',
+			shortName: 'Chl',
 			avgYield: { min: 15, max: 180 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Natural Gas Geyser',
+			shortName: 'NatGas',
 			avgYield: { min: 15, max: 180 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -69,30 +77,35 @@ const volcanoes = {
 	liq: [
 		{
 			name: 'Water Geyser',
+			shortName: 'Water',
 			avgYield: { min: 500, max: 5000 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Cool Slush Geyser',
+			shortName: 'Slush',
 			avgYield: { min: 500, max: 5000 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Polluted Water Vent',
+			shortName: 'PWater',
 			avgYield: { min: 500, max: 5000 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Carbon Dioxide Geyser',
+			shortName: 'CO2Geyser',
 			avgYield: { min: 3, max: 30 },
 			eruption: normalEruption,
 			activity: normalActivity
 		},
 		{
 			name: 'Leaky Oil Fissure',
+			shortName: 'Oil',
 			avgYield: { min: 1, max: 250 },
 			eruption: {
 				period: { min: 600, max: 600 },
@@ -104,6 +117,7 @@ const volcanoes = {
 	volc: [
 		{
 			name: 'Minor Volcano',
+			shortName: 'VolcSmall',
 			material: 'magma',
 			temp: 1726.85,
 			avgYield: { min: 100, max: 1000 },
@@ -112,6 +126,7 @@ const volcanoes = {
 		},
 		{
 			name: 'Volcano',
+			shortName: 'VolcBig',
 			material: 'magma',
 			temp: 1726.85,
 			avgYield: { min: 200, max: 2000 },
@@ -120,6 +135,7 @@ const volcanoes = {
 		},
 		{
 			name: 'Copper Volcano',
+			shortName: 'Copper',
 			material: 'copper',
 			temp: 2226.85,
 			avgYield: { min: 50, max: 500 },
@@ -128,6 +144,7 @@ const volcanoes = {
 		},
 		{
 			name: 'Iron Volcano',
+			shortName: 'Iron',
 			material: 'iron',
 			temp: 2526.85,
 			avgYield: { min: 50, max: 500 },
@@ -136,6 +153,7 @@ const volcanoes = {
 		},
 		{
 			name: 'Gold Volcano',
+			shortName: 'Gold',
 			material: 'gold',
 			temp: 2626.85,
 			avgYield: { min: 50, max: 500 },

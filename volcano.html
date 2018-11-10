@@ -4,15 +4,29 @@
 	<link rel="stylesheet" href="volcano.css">
 	<script src='compute.js'></script>
 	<script>
-		let geyserData = [];
+		const geyserData = [];
 		let selectedGeyser = -1;
 		
+		let geyserShortToLong = {};
+		let geyserLongToShort = {};
+		const addPairing = (lName, sName) => {
+			geyserShortToLong[sName] = lName;
+			geyserLongToShort[lName] = sName;
+		};
+		const getPairing = (name, isLong) => {
+			if (isLong) return geyserLongToShort[name] || '';
+			return geyserShortToLong[name] || name;
+		};
+		
 		const parseData = (data) => {
-			if (!data.includes('_')) geyserData = JSON.parse(data);
-			geyserData = [];
 			const partial = data.split('_');
 			for (let a = 0; a < 12; a++) {
+				if (!partial[a]) {
+					geyserData[a] = ['',0,0,0,0,0];
+					continue;
+				}
 				geyserData[a] = partial[a].split('~');
+				geyserData[a][0] = getPairing(geyserData[a][0]);
 				geyserData[a][1] = parseFloat(geyserData[a][1]);
 				geyserData[a][2] = parseFloat(geyserData[a][2]);
 				geyserData[a][3] = parseFloat(geyserData[a][3]);
@@ -23,10 +37,11 @@
 		const formatData = () => {
 			let result = [];
 			for (let a = 0; a < 12; a++) {
-				const innerData = (geyserData[a] && geyserData[a][5] && geyserData[a]) || ['','','','','',''];
+				const innerData = (geyserData[a] && geyserData[a][5] && geyserData[a].slice(0)) || ['','','','','',''];
+				innerData[0] = getPairing(innerData[0], true);
 				result[a] = innerData.join('~');
 			}
-			return result.join('_');
+			return result.join('_').replace(/~~~~~/g, '').replace(/_+/g, '_');
 		};
 		
 		const niceBarNumber = (val) => {
@@ -129,6 +144,7 @@
 					const opt = document.createElement('option');
 					opt.text = volc.name;
 					optGroup.appendChild(opt);
+					addPairing(volc.name, volc.shortName);
 				});
 			};
 			makeGroup(volcanoes.gas, 'Vents');
