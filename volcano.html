@@ -4,6 +4,11 @@
 	<link rel="stylesheet" href="volcano.css">
 	<script src='compute.js'></script>
 	<script>
+		const niceFloat = (val) => {
+			const resp = parseFloat(val);
+			return isNaN(resp) ? '' : val;
+		};
+		
 		const geyserData = [];
 		let selectedGeyser = -1;
 		
@@ -27,18 +32,23 @@
 				}
 				geyserData[a] = partial[a].split('~');
 				geyserData[a][0] = getPairing(geyserData[a][0]);
-				geyserData[a][1] = parseFloat(geyserData[a][1]);
-				geyserData[a][2] = parseFloat(geyserData[a][2]);
-				geyserData[a][3] = parseFloat(geyserData[a][3]);
-				geyserData[a][4] = parseFloat(geyserData[a][4]);
-				geyserData[a][5] = parseFloat(geyserData[a][5]);
+				geyserData[a][1] = niceFloat(geyserData[a][1]);
+				geyserData[a][2] = niceFloat(geyserData[a][2]);
+				geyserData[a][3] = niceFloat(geyserData[a][3]);
+				geyserData[a][4] = niceFloat(geyserData[a][4]);
+				geyserData[a][5] = niceFloat(geyserData[a][5]);
 			}
 		};
 		const formatData = () => {
 			let result = [];
 			for (let a = 0; a < 12; a++) {
-				const innerData = (geyserData[a] && geyserData[a][5] && geyserData[a].slice(0)) || ['','','','','',''];
+				const innerData = (geyserData[a] && geyserData[a][3] && geyserData[a].slice(0)) || ['','','','','',''];
 				innerData[0] = getPairing(innerData[0], true);
+				innerData[1] = niceFloat(innerData[1]);
+				innerData[2] = niceFloat(innerData[2]);
+				innerData[3] = niceFloat(innerData[3]);
+				innerData[4] = niceFloat(innerData[4]);
+				innerData[5] = niceFloat(innerData[5]);
 				result[a] = innerData.join('~');
 			}
 			return result.join('_').replace(/~~~~~/g, '').replace(/_+/g, '_');
@@ -49,19 +59,40 @@
 			if (val > 1) return 1;
 			return val;
 		};
-		const updateBars = (elem, rollData, name) => {
+		const updateBars = (elem, rollData, name, rollRange) => {
 			if (name) elem.children[0].innerHTML = name;
 			
 			const bars = elem.children[1];
 			const values = elem.children[2];
 			
-			bars.children[0].style.width = 'calc(' + niceBarNumber(rollData.roll[0]) * 100 + '% - 4px)';
-			bars.children[1].style.width = 'calc(' + niceBarNumber(rollData.roll[1]) * 100 + '% - 4px)';
-			
-			values.children[0].innerHTML = rollData.value.toFixed(0) + 'g/s';
-			values.children[0].title = rollData.value + 'g/s';
-			values.children[1].innerHTML = (rollData.roll[1]*100).toFixed(2) + '%';
-			values.children[1].title = (rollData.roll[1]*100) + '%';
+			let handleBar;
+			if (rollRange) {
+				console.log(name);
+				console.log(rollData);
+				console.log(rollRange);
+				handleBar = (bar, id) => {
+					bar.style.width = 'calc(' + (niceBarNumber(rollRange[1].roll[id]) - niceBarNumber(rollRange[0].roll[id])) * 100 + '% - 4px)';
+					bar.style.left = 'calc(' + niceBarNumber(rollRange[0].roll[id]) * 100 + '%)';
+					bar.style.opacity = 0.5;
+				};
+				values.children[0].innerHTML = '~' + rollData.value.toFixed(0) + 'g/s';
+				values.children[0].title = rollRange[0].value.toFixed(6) + 'g/s - ' + rollRange[1].value.toFixed(6) + 'g/s';
+				values.children[1].innerHTML = '~' + (rollData.roll[1]*100).toFixed(2) + '%';
+				values.children[1].title = (rollRange[0].roll[1]*100).toFixed(6) + '% - ' + (rollRange[1].roll[1]*100).toFixed(6) + '%';
+			}
+			else {
+				handleBar = (bar, id) => {
+					bar.style.width = 'calc(' + niceBarNumber(rollData.roll[id]) * 100 + '% - 4px)';
+					bar.style.left = '0px';
+					bar.style.opacity = 1;
+				};
+				values.children[0].innerHTML = rollData.value.toFixed(0) + 'g/s';
+				values.children[0].title = rollData.value.toFixed(6) + 'g/s';
+				values.children[1].innerHTML = (rollData.roll[1]*100).toFixed(2) + '%';
+				values.children[1].title = (rollData.roll[1]*100).toFixed(6) + '%';
+			}
+			handleBar(bars.children[0], 0);
+			handleBar(bars.children[1], 1);
 		};
 		window.onload = function() {
 			const geyserBars = [];
@@ -81,23 +112,23 @@
 					volcType.options[volcType.selectedIndex].text,
 					emitRate.value,
 					{ amount: eruptAmt.value, length: eruptLen.value },
-					{ amount: activeAmt.value * 600, length: activeLen.value * 600 },
+					activeAmt.value && (parseFloat(activeAmt.value) > 0) && { amount: activeAmt.value * 600, length: activeLen.value * 600 },
 					300,
 					540
 				);
 				if(data) {
 					geyserData[selectedGeyser] = [
 						volcType.options[volcType.selectedIndex].text,
-						parseFloat(emitRate.value),
-						parseFloat(eruptAmt.value),
-						parseFloat(eruptLen.value),
-						parseFloat(activeAmt.value),
-						parseFloat(activeLen.value)
+						niceFloat(emitRate.value),
+						niceFloat(eruptAmt.value),
+						niceFloat(eruptLen.value),
+						niceFloat(activeAmt.value),
+						niceFloat(activeLen.value)
 					];
 					url.searchParams.set('data', formatData());
 					window.history.pushState({}, '', url);
-					updateBars(avgEmit, data.volcano.avgYield);
-					updateBars(geyserBars[selectedGeyser], data.volcano.avgYield, data.volcano.name);
+					updateBars(avgEmit, data.volcano.avgYield, null, data.volcano.avgYieldRange);
+					updateBars(geyserBars[selectedGeyser], data.volcano.avgYield, data.volcano.name, data.volcano.avgYieldRange);
 					if (data.production) {
 						extraData.innerHTML = 
 											  'Heat available per gram of volcano output: ' +
@@ -158,7 +189,7 @@
 					if (a == id) {
 						geyserBars[a].children[3].children[0].checked = true;
 						if (!geyserData[a]) geyserData[a] = [];
-						if (geyserData[a][5]) {
+						if (geyserData[a][3]) {
 							volcType.value = geyserData[a][0];
 							emitRate.value = geyserData[a][1];
 							eruptAmt.value = geyserData[a][2];
@@ -192,16 +223,16 @@
 				geyserBars[a].children[3].children[0].addEventListener('change', () => {
 					handleCheck(thisID);
 				});
-				if (geyserData[a] && geyserData[a][5]) {
+				if (geyserData[a] && geyserData[a][3]) {
 					const data = analyze(
 						geyserData[a][0],
 						geyserData[a][1],
 						{ amount: geyserData[a][2], length: geyserData[a][3] },
-						{ amount: geyserData[a][4] * 600, length: geyserData[a][5] * 600 },
+						geyserData[a][4] && (parseFloat(geyserData[a][4]) > 0) && { amount: geyserData[a][4] * 600, length: geyserData[a][5] * 600 },
 						300,
 						540
 					);
-					if(data) updateBars(geyserBars[a], data.volcano.avgYield, data.volcano.name);
+					if(data) updateBars(geyserBars[a], data.volcano.avgYield, data.volcano.name, data.volcano.avgYieldRange);
 				}
 			}
 			handleCheck(0);

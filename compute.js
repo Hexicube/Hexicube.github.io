@@ -198,7 +198,8 @@ const materials = {
 
 const calcRoll = (low, high, val) => {
 	const val1 = (val-low) / (high-low);
-	if (val1 < 0 || val1 > 1) return [val1];
+	if (val1 < 0) return [val1, 0];
+	if (val1 > 1) return [val1, 1];
 	
 	//Inverse of: y = 1 - ((log((1.0 / (x * 0.995054754 + 0.002472623) - 1.0)) + 6) / 12)
 	//This is the function that the game uses to convert raw rolls, causing them to bunch up towards the middle a lot.
@@ -221,10 +222,11 @@ const rollify = (input, data) => {
 			return result;
 		}
 	}
+	else return input;
 };
 
 const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
-	if (!type || !rate || !eruption || !activity || !startTemp || !endTemp) return;
+	if (!type || !rate || !eruption || !startTemp || !endTemp) return;
 	let volcano = null;
 	[...volcanoes.gas, ...volcanoes.liq, ...volcanoes.volc].forEach(volc => {
 		if (volc.name === type) {
@@ -238,9 +240,18 @@ const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
 	
 	let data = {};
 	data.eruption = { period: eruption.length, amount: eruption.amount/eruption.length };
-	data.activity = { period: activity.length, amount: activity.amount/activity.length };
-	data.avgYield = rate * data.eruption.amount * data.activity.amount;
-	result.volcano = rollify(data, volcano);
+	data.activity = activity && { period: activity.length, amount: activity.amount/activity.length };
+	if (data.activity) {
+		data.avgYield = rate * data.eruption.amount * data.activity.amount;
+		result.volcano = rollify(data, volcano);
+	}
+	else {
+		data.avgYield = rate * data.eruption.amount * (volcano.activity.amount.min + volcano.activity.amount.max) / 2;
+		data.avgYieldRange = [Math.max(rate * data.eruption.amount * volcano.activity.amount.min, volcano.avgYield.min), Math.min(rate * data.eruption.amount * volcano.activity.amount.max, volcano.avgYield.max)];
+		result.volcano = rollify(data, volcano);
+		result.volcano.avgYieldRange[0] = rollify(result.volcano.avgYieldRange[0], volcano.avgYield);
+		result.volcano.avgYieldRange[1] = rollify(result.volcano.avgYieldRange[1], volcano.avgYield);
+	}
 	result.volcano.name = type;
 	if (!volcano.material) return result;
 	result.volcano.temp = volcano.temp;
