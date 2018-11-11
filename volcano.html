@@ -65,11 +65,21 @@
 			const bars = elem.children[1];
 			const values = elem.children[2];
 			
-			let handleBar;
+			let handleBar = (bar, id) => {
+				bar.style.width = 'calc(' + niceBarNumber(rollData.roll[id]) * 100 + '% - 4px)';
+				bar.style.left = '0px';
+				bar.style.opacity = 1;
+				bar.style.display = null;
+			};
 			if (rollRange) {
-				console.log(name);
-				console.log(rollData);
-				console.log(rollRange);
+				handleBar = (bar, id) => {
+					bar.style.width = 'calc(' + niceBarNumber(rollRange[0].roll[id]) * 100 + '% - 4px)';
+					bar.style.left = '0px';
+					bar.style.opacity = 1;
+					bar.style.display = null;
+				};
+				handleBar(bars.children[2], 0);
+				handleBar(bars.children[3], 1);
 				handleBar = (bar, id) => {
 					bar.style.width = 'calc(' + (niceBarNumber(rollRange[1].roll[id]) - niceBarNumber(rollRange[0].roll[id])) * 100 + '% - 4px)';
 					bar.style.left = 'calc(' + niceBarNumber(rollRange[0].roll[id]) * 100 + '%)';
@@ -81,15 +91,12 @@
 				values.children[1].title = (rollRange[0].roll[1]*100).toFixed(6) + '% - ' + (rollRange[1].roll[1]*100).toFixed(6) + '%';
 			}
 			else {
-				handleBar = (bar, id) => {
-					bar.style.width = 'calc(' + niceBarNumber(rollData.roll[id]) * 100 + '% - 4px)';
-					bar.style.left = '0px';
-					bar.style.opacity = 1;
-				};
 				values.children[0].innerHTML = rollData.value.toFixed(0) + 'g/s';
 				values.children[0].title = rollData.value.toFixed(6) + 'g/s';
 				values.children[1].innerHTML = (rollData.roll[1]*100).toFixed(2) + '%';
 				values.children[1].title = (rollData.roll[1]*100).toFixed(6) + '%';
+				bars.children[2].style.display = 'none';
+				bars.children[3].style.display = 'none';
 			}
 			handleBar(bars.children[0], 0);
 			handleBar(bars.children[1], 1);
@@ -270,8 +277,10 @@
 			<div class='rounded' id='avgEmit'>
 				<span class='rounded-start' style='line-height:15px;'>Average<br>emission rate:</span>
 				<span class='rounded-mid double-gauge'>
-					<span class='gauge-top' style='width: calc(0% - 4px);'></span>
-					<span class='gauge-bottom' style='width: calc(0% - 4px);'></span>
+					<span class='gauge-top' style='width: calc(0% - 4px)'></span>
+					<span class='gauge-bottom' style='width: calc(0% - 4px)'></span>
+					<span class='gauge-top' style='width: calc(0% - 4px); margin-top:-30px'></span>
+					<span class='gauge-bottom' style='width: calc(0% - 4px)'></span>
 				</span>
 				<span class='rounded-end'>
 					<span style='height:50%;top:0%;display:block;line-height:15px;'>0g/s</span>
@@ -290,8 +299,10 @@
 		<div class='rounded' id='geyser1' style='display: flex'>
 			<span class='rounded-start' style='line-height:15px; width: 150px; text-align: middle'></span>
 			<span class='rounded-mid double-gauge'>
-				<span class='gauge-top' style='width: calc(0% - 4px);'></span>
-				<span class='gauge-bottom' style='width: calc(0% - 4px);'></span>
+				<span class='gauge-top' style='width: calc(0% - 4px)'></span>
+				<span class='gauge-bottom' style='width: calc(0% - 4px)'></span>
+				<span class='gauge-top' style='width: calc(0% - 4px); margin-top:-30px'></span>
+				<span class='gauge-bottom' style='width: calc(0% - 4px)'></span>
 			</span>
 			<span class='rounded-mid'>
 				<span style='height:50%;top:0%;display:block;line-height:15px;'>0g/s</span>
