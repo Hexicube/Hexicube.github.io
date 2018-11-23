@@ -137,40 +137,33 @@
 					window.history.pushState({}, '', url);
 					updateBars(avgEmit, data.volcano.avgYield, null, data.volcano.avgYieldRange);
 					updateBars(geyserBars[selectedGeyser], data.volcano.avgYield, data.volcano.name, data.volcano.avgYieldRange);
-					if (data.production) {
-						extraData.innerHTML = 
-											  'Heat available per gram of volcano output: ' +
-											  data.production.overall.availHeatPerGram + '<br><br>' +
-											  'Heat required to heat 300C crude oil to 540C natural gas: ' +
-											  data.production.overall.neededHeat + '<br>' +
-											  'Heat ratio: ' +
-											  data.production.overall.gramRatio.toFixed(4) + '<br>' +
-											  'Maximum natural gas production: ' +
-											  data.production.overall.finalRate.toFixed(4) + 'g/s<br>' +
-											  'Number of generators required: ' +
-											  data.production.overall.genCount.toFixed(4) + '<br>' +
-											  'Power output: ' +
-											  data.production.overall.powerOutput.toFixed(2) + 'W<br><br>' +
-											  'Heat required to heat 300C crude oil to 400C petroleum: ' +
-											  data.production.preHeat.neededHeatForPetro + '<br>' +
-											  'Natural gas temperature after converting crude oil to petroleum: ' +
-											  data.production.preHeat.natGasTempAfterPetro.toFixed(4) + 'C<br>' +
-											  'Final pre-heat temperature: ' +
-											  data.production.preHeat.finalTemp.toFixed(4) + 'C<br><br>' +
-											  'Heat required to heat pre-heated ' +
-											  data.production.preHeat.finalTemp.toFixed(4) +
-											  'C petroleum to 540C natural gas: ' +
-											  data.production.overallPreHeat.neededHeat + '<br>' +
-											  'Heat ratio when pre-heating: ' +
-											  data.production.overallPreHeat.gramRatio.toFixed(4) + '<br>' +
-											  'Maximum natural gas production: ' +
-											  data.production.overallPreHeat.finalRate.toFixed(4) + 'g/s<br>' +
-											  'Number of generators required: ' +
-											  data.production.overallPreHeat.genCount.toFixed(4) + '<br>' +
-											  'Power output: ' +
-											  data.production.overallPreHeat.powerOutput.toFixed(2) + 'W';
+					let text = '';
+					if (data.storage) {
+						text = 
+								'Active output rate: ' +
+								data.storage.activeRate.toFixed(1) + 'g/s<br>' +
+								'Excess rate: ' +
+								data.storage.excessRate.toFixed(1) + 'g/s<br>' +
+								'Total storage needed: ' +
+								(data.storage.totalStorage / 1000).toFixed(2) + 'kg';
 					}
-					else extraData.innerHTML = 'Not a volcano.';
+					if (data.cooling) {
+						if (data.storage) text += '<br><br>';
+						text += 
+								'Target temperature: ' +
+								data.cooling.targetTemp + 'C<br>' +
+								'DTUs per gram: ' +
+								data.cooling.perGramDTU.toFixed(1) + 'DTU/g<br>' +
+								'DTUs per second: ';
+						if (data.volcano.avgYieldRange)
+							text +=
+								data.cooling.perSecDTU[0].toFixed(1) + ' - ' +
+								data.cooling.perSecDTU[1].toFixed(1) + 'DTU/s';
+						else
+							text += data.cooling.perSecDTU.toFixed(1) + 'DTU/s';
+					}
+					if (text == '') text = 'Unknown error.';
+					extraData.innerHTML = text;
 				}
 				else updateBars(avgEmit, { roll: [ 0, 0 ], value: 0 });
 			};
@@ -291,8 +284,8 @@
 			<br>
 			<input class='rounded' id='submitButton' type='button' value='Compute!'>
 			<br>
-			<div class='rounded-basic' id='extraData' style='display: none'>
-				Power production info will appear here.
+			<div class='rounded-basic' id='extraData'>
+				Extra information will appear here.
 			</div>
 		</div>
 	</span>

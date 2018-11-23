@@ -20,6 +20,7 @@ const volcanoes = {
 		{
 			name: 'Cool Steam Vent',
 			shortName: 'SteamCold',
+			material: ['Steam', 110],
 			avgYield: { min: 200, max: 2500 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -27,6 +28,7 @@ const volcanoes = {
 		{
 			name: 'Steam Vent (500C)',
 			shortName: 'SteamHot',
+			material: ['Steam', 500],
 			avgYield: { min: 10, max: 100 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -34,6 +36,7 @@ const volcanoes = {
 		{
 			name: 'Carbon Dioxide Vent',
 			shortName: 'CO2Vent',
+			material: ['Carbon Dioxide', 500],
 			avgYield: { min: 5, max: 50 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -41,6 +44,7 @@ const volcanoes = {
 		{
 			name: 'Hydrogen Vent',
 			shortName: 'HVent',
+			material: ['Hydrogen', 500],
 			avgYield: { min: 5, max: 50 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -48,6 +52,7 @@ const volcanoes = {
 		{
 			name: 'Hot Polluted Oxygen Vent',
 			shortName: 'PO2',
+			material: ['Polluted Oxygen', 500],
 			avgYield: { min: 15, max: 180 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -55,6 +60,7 @@ const volcanoes = {
 		{
 			name: 'Infectious Polluted Oxygen Vent',
 			shortName: 'IPO2',
+			material: ['Polluted Oxygen', 60],
 			avgYield: { min: 15, max: 180 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -62,6 +68,7 @@ const volcanoes = {
 		{
 			name: 'Chlorine Gas Vent',
 			shortName: 'Chl',
+			material: ['Chlorine', 500],
 			avgYield: { min: 15, max: 180 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -69,6 +76,7 @@ const volcanoes = {
 		{
 			name: 'Natural Gas Geyser',
 			shortName: 'NatGas',
+			material: ['Natural Gas', 150],
 			avgYield: { min: 15, max: 180 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -78,6 +86,7 @@ const volcanoes = {
 		{
 			name: 'Water Geyser',
 			shortName: 'Water',
+			material: ['Water', 95],
 			avgYield: { min: 500, max: 5000 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -85,6 +94,7 @@ const volcanoes = {
 		{
 			name: 'Cool Slush Geyser',
 			shortName: 'Slush',
+			material: ['Polluted Water', -10],
 			avgYield: { min: 500, max: 5000 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -92,6 +102,7 @@ const volcanoes = {
 		{
 			name: 'Polluted Water Vent',
 			shortName: 'PWater',
+			material: ['Polluted Water', 30],
 			avgYield: { min: 500, max: 5000 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -99,6 +110,7 @@ const volcanoes = {
 		{
 			name: 'Carbon Dioxide Geyser',
 			shortName: 'CO2Geyser',
+			material: ['Carbon Dioxide', -55.15],
 			avgYield: { min: 3, max: 30 },
 			eruption: normalEruption,
 			activity: normalActivity
@@ -106,6 +118,7 @@ const volcanoes = {
 		{
 			name: 'Leaky Oil Fissure',
 			shortName: 'Oil',
+			material: ['Crude Oil', 326.85],
 			avgYield: { min: 1, max: 250 },
 			eruption: {
 				period: { min: 600, max: 600 },
@@ -118,8 +131,7 @@ const volcanoes = {
 		{
 			name: 'Minor Volcano',
 			shortName: 'VolcSmall',
-			material: 'magma',
-			temp: 1726.85,
+			material: ['Magma', 1726.85],
 			avgYield: { min: 100, max: 1000 },
 			eruption: volcanoEruption,
 			activity: normalActivity
@@ -127,8 +139,7 @@ const volcanoes = {
 		{
 			name: 'Volcano',
 			shortName: 'VolcBig',
-			material: 'magma',
-			temp: 1726.85,
+			material: ['Magma', 1726.85],
 			avgYield: { min: 200, max: 2000 },
 			eruption: volcanoEruption,
 			activity: normalActivity
@@ -136,8 +147,7 @@ const volcanoes = {
 		{
 			name: 'Copper Volcano',
 			shortName: 'Copper',
-			material: 'copper',
-			temp: 2226.85,
+			material: ['Copper', 2226.85],
 			avgYield: { min: 50, max: 500 },
 			eruption: metalEruption,
 			activity: normalActivity
@@ -145,8 +155,7 @@ const volcanoes = {
 		{
 			name: 'Iron Volcano',
 			shortName: 'Iron',
-			material: 'iron',
-			temp: 2526.85,
+			material: ['Iron', 2526.85],
 			avgYield: { min: 50, max: 500 },
 			eruption: metalEruption,
 			activity: normalActivity
@@ -154,8 +163,7 @@ const volcanoes = {
 		{
 			name: 'Gold Volcano',
 			shortName: 'Gold',
-			material: 'gold',
-			temp: 2626.85,
+			material: ['Gold', 2626.85],
 			avgYield: { min: 50, max: 500 },
 			eruption: metalEruption,
 			activity: normalActivity
@@ -164,36 +172,19 @@ const volcanoes = {
 };
 
 const materials = {
-	crude_oil: {
-		name: 'Crude Oil',
-		spHeat: 1.69,
-		melt: { material: 'petroleum', temp: 400 }
-	},
-	petroleum: {
-		name: 'Petroleum',
-		spHeat: 1.76,
-		melt: { material: 'nat_gas', temp: 540 }
-	},
-	nat_gas: {
-		name: 'Natural Gas',
-		spHeat: 2.191
-	},
-	magma: {
-		name: 'Magma',
-		spHeat: 0.2
-	},
-	copper: {
-		name: 'Copper',
-		spHeat: 0.385
-	},
-	iron: {
-		name: 'Iron',
-		spHeat: 0.449
-	},
-	gold: {
-		name: 'Gold',
-		spHeat: 0.129
-	}
+	'Steam': 4.179,
+	'Water': 4.179,
+	'Polluted Water': 4.179,
+	'Carbon Dioxide': 0.846,
+	'Hydrogen': 2.4,
+	'Polluted Oxygen': 1.01,
+	'Chlorine': 0.48,
+	'Crude Oil': 1.69,
+	'Natural Gas': 2.191,
+	'Magma': 0.2,
+	'Copper': 0.385,
+	'Iron': 0.449,
+	'Gold': 0.129
 };
 
 const calcRoll = (low, high, val) => {
@@ -244,6 +235,11 @@ const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
 	if (data.activity) {
 		data.avgYield = rate * data.eruption.amount * data.activity.amount;
 		result.volcano = rollify(data, volcano);
+		
+		result.storage = {};
+		result.storage.activeRate = rate * data.eruption.amount;
+		result.storage.excessRate = result.storage.activeRate - data.avgYield;
+		result.storage.totalStorage = result.storage.excessRate * activity.amount;
 	}
 	else {
 		data.avgYield = rate * data.eruption.amount * (volcano.activity.amount.min + volcano.activity.amount.max) / 2;
@@ -254,44 +250,16 @@ const analyze = (type, rate, eruption, activity, startTemp, endTemp) => {
 	}
 	result.volcano.name = type;
 	if (!volcano.material) return result;
-	result.volcano.temp = volcano.temp;
-	result.volcano.material = materials[volcano.material];
 	
-	data = {};
-	
-	data.preHeat = {};
-	data.preHeat.startTemp = startTemp;
-	data.preHeat.endTemp = endTemp;
-	data.preHeat.neededHeatForPetro = (materials.crude_oil.melt.temp - startTemp) * materials.crude_oil.spHeat;
-	data.preHeat.natGasTempAfterPetro = data.preHeat.endTemp - (data.preHeat.neededHeatForPetro / materials.nat_gas.spHeat);
-	data.preHeat.natGasExtraHeat = (data.preHeat.natGasTempAfterPetro - materials.crude_oil.melt.temp) * materials.nat_gas.spHeat;
-	data.preHeat.finalTemp = materials.crude_oil.melt.temp + ((data.preHeat.natGasExtraHeat / materials[materials.crude_oil.melt.material].spHeat) / 2);
-	
-	data.phase1 = { startHeat: startTemp, endHeat: materials.crude_oil.melt.temp, spHeat: materials.crude_oil.spHeat };
-	data.phase1.neededHeat = data.phase1.spHeat * (data.phase1.endHeat - data.phase1.startHeat);
-	data.phase2 = { startHeat: data.phase1.endHeat, endHeat: endTemp, spHeat: materials[materials.crude_oil.melt.material].spHeat };
-	data.phase2.neededHeat = data.phase2.spHeat * (data.phase2.endHeat - data.phase2.startHeat);
-	
-	data.overall = {};
-	data.overall.availHeatPerGram = result.volcano.material.spHeat * (result.volcano.temp - endTemp);
-	data.overall.neededHeat = data.phase1.neededHeat + data.phase2.neededHeat;
-	data.overall.gramRatio = data.overall.availHeatPerGram / data.overall.neededHeat;
-	data.overall.finalRate = data.overall.gramRatio * result.volcano.avgYield.value;
-	data.overall.genCount = data.overall.finalRate / 90;
-	data.overall.powerOutput = data.overall.genCount * 800;
-	
-	data.phase2x = { startHeat: data.preHeat.finalTemp, endHeat: endTemp, spHeat: materials[materials.crude_oil.melt.material].spHeat };
-	data.phase2x.neededHeat = data.phase2x.spHeat * (data.phase2x.endHeat - data.phase2x.startHeat);
-	
-	data.overallPreHeat = {};
-	data.overallPreHeat.availHeatPerGram = result.volcano.material.spHeat * (result.volcano.temp - endTemp);
-	data.overallPreHeat.neededHeat = data.phase2x.neededHeat;
-	data.overallPreHeat.gramRatio = data.overallPreHeat.availHeatPerGram / data.overallPreHeat.neededHeat;
-	data.overallPreHeat.finalRate = data.overallPreHeat.gramRatio * result.volcano.avgYield.value;
-	data.overallPreHeat.genCount = data.overallPreHeat.finalRate / 90;
-	data.overallPreHeat.powerOutput = data.overallPreHeat.genCount * 800;
-	
-	result.production = data;
+	result.cooling = {};
+	result.cooling.targetTemp = 20; // room temperature
+	result.cooling.perGramDTU = (materials[volcano.material[0]] * (volcano.material[1] - result.cooling.targetTemp));
+	if (data.activity) {
+		result.cooling.perSecDTU = result.cooling.perGramDTU * result.volcano.avgYield.value;
+	}
+	else {
+		result.cooling.perSecDTU = [result.cooling.perGramDTU * result.volcano.avgYieldRange[0].value, result.cooling.perGramDTU * result.volcano.avgYieldRange[1].value];
+	}
 	
 	return result;
 };
