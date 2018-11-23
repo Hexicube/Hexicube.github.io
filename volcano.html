@@ -162,7 +162,7 @@
 						else
 							text += data.cooling.perSecDTU.toFixed(1) + 'DTU/s';
 					}
-					if (text == '') text = 'Unknown error.';
+					if (text == '') text = 'Unknown error, try clearing your cache (Ctrl+F5).';
 					extraData.innerHTML = text;
 				}
 				else updateBars(avgEmit, { roll: [ 0, 0 ], value: 0 });
