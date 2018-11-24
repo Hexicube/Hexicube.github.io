@@ -181,7 +181,7 @@ const materials = {
 	'Chlorine': 0.48,
 	'Crude Oil': 1.69,
 	'Natural Gas': 2.191,
-	'Magma': 0.2,
+	'Magma': 1,
 	'Copper': 0.385,
 	'Iron': 0.449,
 	'Gold': 0.129
