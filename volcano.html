@@ -102,7 +102,56 @@
 			handleBar(bars.children[0], 0);
 			handleBar(bars.children[1], 1);
 		};
+		
+		const toolsMapping = {
+			GEYSER_CO2: 'CO2Geyser',
+			GEYSER_COOL_SLUSH: 'Slush',
+			GEYSER_NATGAS: 'NatGas',
+			GEYSER_OIL: 'Oil',
+			GEYSER_WATER: 'Water',
+			VENT_CHLORINE: 'Chl',
+			VENT_CO2: 'CO2Vent',
+			VENT_COOL_STEAM: 'SteamCold',
+			VENT_GERMY_PO2: 'IPO2',
+			VENT_HOT_STEAM: 'SteamHot',
+			VENT_HYDROGEN: 'HVent',
+			VENT_POLLUTED_H2O: 'PWater',
+			VENT_POLLUTED_PO2: 'PO2',
+			VOLCANO: 'VolcBig',
+			VOLCANO_COPPER: 'Copper',
+			VOLCANO_GOLD: 'Gold',
+			VOLCANO_IRON: 'Iron',
+			VOLCANO_MINOR: 'VolcSmall'
+		};
+		const getAndParseTools = url => {
+			if (url.startsWith('https://toolsnotincluded.net/seeds/')) {
+				const xmlHttp = new XMLHttpRequest();
+				xmlHttp.onreadystatechange = () => {
+					const data = JSON.parse(xmlHttp.responseText);
+					let newURL = 'https://Hexicube.github.io/volcano.html?data=';
+					let counter = 0;
+					data.geysers.forEach(geyser => {
+						if (toolsMapping[geyser.type]) {
+							counter++;
+							newURL += [toolsMapping[geyser.type], geyser.eruptionRate, geyser.activeEruptionPeriod, geyser.eruptionPeriod, geyser.activeDormancyPeriod, geyser.dormancyPeriod].join('~');
+							if (counter < 12) newURL += '_';
+						}
+					});
+					window.open(newURL, '_blank');
+				};
+				// this is super gross, but theres a missing CORS header
+				xmlHttp.open('GET', 'https://cors-escape.herokuapp.com/https://api.toolsnotincluded.net/api/seeds/' + url.substring(35));
+				xmlHttp.send();
+			}
+			// https://toolsnotincluded.net/seeds/1935214591/302293
+			// https://api.toolsnotincluded.net/api/seeds/1935214591/302293
+		};
+		
 		window.onload = function() {
+			document.getElementById('toolsButton').onclick = () => {
+				getAndParseTools(document.getElementById('toolsURL').value);
+			};
+			
 			const geyserBars = [];
 			const url = new URL(window.location.href);
 			
@@ -305,6 +354,14 @@
 			<span class='rounded-end' style='border-left: 2px solid #99f; background-color: #a9e7ff; width: 28px'>
 				<input id='geyser1radio' style='vertical-align: middle' type='radio' />
 			</span>
+		</div>
+	</span>
+	<br><br><br><br>
+	<span style='display: flex'>
+		<div class='rounded'>
+			<span class='rounded-start' style='width: 200px'>ToolsNotIncluded seed URL:</span>
+			<input id='toolsURL' class='rounded-mid' style='height: calc(100% - 4px); padding: 0px; width: 350px'>
+			<input id='toolsButton' class='rounded-end' id='submitButton' type='button' value='Go!'>
 		</div>
 	</span>
 </body>
