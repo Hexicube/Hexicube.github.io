@@ -1,0 +1,237 @@
+<!DOCTYPE HTML>
+<link rel="shortcut icon" type="image/x-icon" href="https://forums.factorio.com/favicon.ico">
+<head>
+	<title>Factorio Ratio Math</title>
+	<link rel="stylesheet" href="ratio.css">
+	<script>
+		const recipeData = [
+			{
+				name: 'Red Science',
+				time: 5,
+				aSpeed: 0.75,
+				divs: [
+					{
+						name: 'Copper Plate',
+						time: 3.5,
+						aSpeed: 2,
+						quantity: 1,
+						required: 1
+					},
+					{
+						name: 'Iron Gear',
+						time: 0.5,
+						aSpeed: 0.75,
+						quantity: 1,
+						required: 1
+					}
+				],
+				default: 1
+			},
+			{
+				name: 'Electronic Circuit',
+				time: 0.5,
+				aSpeed: 0.75,
+				divs: [
+					{
+						name: 'Iron Plate',
+						time: 3.5,
+						aSpeed: 2,
+						quantity: 1,
+						required: 1
+					},
+					{
+						name: 'Copper Cable',
+						time: 0.5,
+						aSpeed: 0.75,
+						quantity: 2,
+						required: 3
+					}
+				],
+				default: 1
+			}
+		];
+		const iconMap = {
+			'Red Science': 'redsci',
+			'Electronic Circuit': 'circ',
+			'Iron Gear': 'gear',
+			'Copper Plate': 'copper',
+			'Iron Plate': 'iron',
+			'Copper Cable': 'cable'
+		};
+		const machineMap = {
+			'Red Science': 'ass',
+			'Electronic Circuit': 'ass',
+			'Iron Gear': 'ass',
+			'Copper Plate': 'furn',
+			'Iron Plate': 'furn',
+			'Copper Cable': 'ass'
+		};
+		
+		const getLowestWhole = (a, b) => {
+			if (a === Math.round(a) && b === Math.round(b)) return [a, b];
+			// numbers are never irrational
+			let denom = 2;
+			while (denom <= 100) {
+				const a2 = a * denom;
+				const b2 = b * denom;
+				if (a2 === Math.round(a2) && b2 === Math.round(b2)) return [a2, b2];
+				denom++;
+			}
+			return [0, 0];
+		};
+		
+		const lowestDenom = (a, b) => {
+			let denom = b;
+			while (denom > 1) {
+				if (a/denom === Math.round(a/denom) && b/denom === Math.round(b/denom)) return denom;
+				denom--;
+			}
+			return 1;
+		};
+		
+		const applyRecipe = () => {
+			document.getElementById('recipe1').src = 'ratio_img/' + iconMap[curRecipe] + '.png';
+			document.getElementById('recipe2').src = 'ratio_img/' + machineMap[curRecipe] + '1.png';
+			document.getElementById('ingred1').src = 'ratio_img/' + iconMap[curIngredient] + '.png';
+			document.getElementById('ingred2').src = 'ratio_img/' + machineMap[curIngredient] + '2.png';
+			
+			const recipe = recipeData.find(r => r.name === curRecipe);
+			const ingredient = recipe.divs.find(i => i.name === curIngredient);
+			document.getElementById('1spd1').innerHTML = recipe.time;
+			document.getElementById('1spd2').innerHTML = ingredient.time;
+			document.getElementById('1ass1').innerHTML = ingredient.aSpeed;
+			document.getElementById('1ass2').innerHTML = recipe.aSpeed;
+			document.getElementById('1qty1').innerHTML = ingredient.required;
+			document.getElementById('1qty2').innerHTML = ingredient.quantity;
+			
+			const wholeTime = getLowestWhole(recipe.time, ingredient.time);
+			const wholeSpeed = getLowestWhole(ingredient.aSpeed, recipe.aSpeed);
+			const wholeQuantity = getLowestWhole(ingredient.required, ingredient.quantity);
+			document.getElementById('2spd1').innerHTML = wholeTime[0];
+			document.getElementById('2spd2').innerHTML = wholeTime[1];
+			document.getElementById('2ass1').innerHTML = wholeSpeed[0];
+			document.getElementById('2ass2').innerHTML = wholeSpeed[1];
+			document.getElementById('2qty1').innerHTML = wholeQuantity[0];
+			document.getElementById('2qty2').innerHTML = wholeQuantity[1];
+			
+			document.getElementById('3top').innerHTML = wholeTime[0] * wholeSpeed[0] * wholeQuantity[0];
+			document.getElementById('3bot').innerHTML = wholeTime[1] * wholeSpeed[1] * wholeQuantity[1];
+			
+			const common = lowestDenom(wholeTime[0] * wholeSpeed[0] * wholeQuantity[0],
+									   wholeTime[1] * wholeSpeed[1] * wholeQuantity[1]);
+			document.getElementById('4top').innerHTML = (wholeTime[0] * wholeSpeed[0] * wholeQuantity[0]) / common + 'x ' + curRecipe;
+			document.getElementById('4bot').innerHTML = (wholeTime[1] * wholeSpeed[1] * wholeQuantity[1]) / common + 'x ' + curIngredient;
+		};
+		
+		let curRecipe;
+		let curIngredient;
+		window.onload = function() {
+			const sel1 = document.getElementById('sel1');
+			sel1.onchange = () => {
+				curRecipe = sel1.value;
+				while (sel2.options.length > 0) sel2.remove(0);
+				const recipe = recipeData.find(r => r.name === curRecipe);
+				recipe.divs.forEach(i => {
+					const opt = document.createElement('option');
+					opt.text = i.name;
+					sel2.add(opt);
+				});
+				sel2.selectedIndex = recipe.default;
+				sel2.onchange();
+			};
+			const sel2 = document.getElementById('sel2');
+			sel2.onchange = () => {
+				curIngredient = sel2.value;
+				applyRecipe();
+			};
+			recipeData.forEach(r => {
+				const opt = document.createElement('option');
+				opt.text = r.name;
+				sel1.add(opt);
+			});
+			sel1.value = 'Electronic Circuit';
+			sel1.onchange();
+		};
+	</script>
+</head>
+<body style='background:#38383c;'>
+	<span style='display:flex'>
+		<span style='display:grid; width: 300px'>
+			<select class='rounded' id='sel1' style='width: 240px'>
+			</select>
+			<img style='position: absolute; top: 50px' id='recipe1' src=''>
+			<img style='position: absolute; top: 250px' id='recipe2' src=''>
+		</span>
+		<span style='display:table'>
+			<table>
+				<tr>
+					<td><div style='background-color: orangered' class='rounded' id='1spd1'/></td>
+					<td rowspan="3" style='width:25px; text-align:center'>●</td>
+					<td><div style='background-color: lightseagreen' class='rounded' id='1ass1'/></td>
+					<td rowspan="3" style='width:25px; text-align:center'>●</td>
+					<td><div style='background-color: yellow' class='rounded' id='1qty1'/></td>
+				</tr>
+				<tr>
+					<td><hr style='border: 2px inset grey'></td>
+					<td><hr style='border: 2px inset grey'></td>
+					<td><hr style='border: 2px inset grey'></td>
+				</tr>
+				<tr>
+					<td><div style='background-color: forestgreen' class='rounded' id='1spd2'/></td>
+					<td><div style='background-color: orange' class='rounded' id='1ass2'/></td>
+					<td><div style='background-color: cornflowerblue' class='rounded' id='1qty2'/></td>
+				</tr>
+			</table>
+			<p style='text-align:center; color: white'>Make the fractions whole</p>
+			<table>
+				<tr>
+					<td><div class='rounded' id='2spd1'/></td>
+					<td rowspan="3" style='width:25px; text-align:center'>●</td>
+					<td><div class='rounded' id='2ass1'/></td>
+					<td rowspan="3" style='width:25px; text-align:center'>●</td>
+					<td><div class='rounded' id='2qty1'/></td>
+				</tr>
+				<tr>
+					<td><hr style='border: 2px inset grey'></td>
+					<td><hr style='border: 2px inset grey'></td>
+					<td><hr style='border: 2px inset grey'></td>
+				</tr>
+				<tr>
+					<td><div class='rounded' id='2spd2'/></td>
+					<td><div class='rounded' id='2ass2'/></td>
+					<td><div class='rounded' id='2qty2'/></td>
+				</tr>
+			</table>
+			<p style='text-align:center; color: white'>Multiply them together</p>
+			<table>
+				<tr>
+					<td><div style='width:266px' class='rounded' id='3top'/></td>
+				</tr>
+				<tr>
+					<td><hr style='border: 2px inset grey'></td>
+				</tr>
+				<tr>
+					<td><div style='width:266px' class='rounded' id='3bot'/></td>
+				</tr>
+			</table>
+			<p style='text-align:center; color: white'>Simplify if possible</p>
+			<table>
+				<tr>
+					<td><div style='background-color: violet; width:266px' class='rounded' id='4top'/></td>
+				</tr>
+				<tr>
+					<td><hr style='border: 2px inset grey'></td>
+				</tr>
+				<tr>
+					<td><div style='background-color: blueviolet; width:266px' class='rounded' id='4bot'/></td>
+				</tr>
+			</table>
+		</span>
+		<span style='display:grid; margin-left: 20px'>
+			<select class='rounded' id='sel2' style='width: 240px'>
+			</select>
+			<img style='position: absolute; top: 50px' id='ingred1' src=''>
+			<img style='position: absolute; top: 250px' id='ingred2' src=''>
+		</span>
+	</span>
+</body>

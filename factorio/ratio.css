@@ -1,0 +1,20 @@
+.rounded {
+    border: 2px solid #888;
+	border-style: outset;
+    border-radius: 10px;
+    background-color: whiteSmoke;
+	height: 32px;
+	width: 64px;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 24px;
+	font-family: Arial;
+}
+
+input {
+     user-select: none;
+    -khtml-user-select: none;
+    -o-user-select: none;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+}
