@@ -8,19 +8,16 @@
 			{
 				name: 'Red Science',
 				time: 5,
-				aSpeed: 0.75,
 				divs: [
 					{
 						name: 'Copper Plate',
 						time: 3.5,
-						aSpeed: 2,
 						quantity: 1,
 						required: 1
 					},
 					{
 						name: 'Iron Gear',
 						time: 0.5,
-						aSpeed: 0.75,
 						quantity: 1,
 						required: 1
 					}
@@ -30,19 +27,16 @@
 			{
 				name: 'Electronic Circuit',
 				time: 0.5,
-				aSpeed: 0.75,
 				divs: [
 					{
 						name: 'Iron Plate',
 						time: 3.5,
-						aSpeed: 2,
 						quantity: 1,
 						required: 1
 					},
 					{
 						name: 'Copper Cable',
 						time: 0.5,
-						aSpeed: 0.75,
 						quantity: 2,
 						required: 3
 					}
@@ -59,15 +53,19 @@
 			'Copper Cable': 'cable'
 		};
 		const machineMap = {
-			'Red Science': 'ass',
-			'Electronic Circuit': 'ass',
-			'Iron Gear': 'ass',
-			'Copper Plate': 'furn',
-			'Iron Plate': 'furn',
-			'Copper Cable': 'ass'
+			'Red Science': [['Assembling Machine 1', 0.5], ['Assembling Machine 2', 0.75], ['Assembling Machine 3', 1.25]],
+			'Electronic Circuit': [['Assembling Machine 1', 0.5], ['Assembling Machine 2', 0.75], ['Assembling Machine 3', 1.25]],
+			'Iron Gear': [['Assembling Machine 1', 0.5], ['Assembling Machine 2', 0.75], ['Assembling Machine 3', 1.25]],
+			'Copper Plate': [['Stone Furnace', 1], ['Steel Furnace', 2], ['Electric Furnace', 2]],
+			'Iron Plate': [['Stone Furnace', 1], ['Steel Furnace', 2], ['Electric Furnace', 2]],
+			'Copper Cable': [['Assembling Machine 1', 0.5], ['Assembling Machine 2', 0.75], ['Assembling Machine 3', 1.25]]
+		};
+		const getMachineImage = (id, ingred) => {
+			return 'ratio_img/' + id + (ingred ? 'b' : 'a') + '.png';
 		};
 		
 		const getLowestWhole = (a, b) => {
+			if (a === b) return [1, 1];
 			if (a === Math.round(a) && b === Math.round(b)) return [a, b];
 			// numbers are never irrational
 			let denom = 2;
@@ -89,23 +87,29 @@
 			return 1;
 		};
 		
+		const machineText = (type, amt) => {
+			return type + (amt !== 1 && 's' || '');
+		};
+		
 		const applyRecipe = () => {
+			const machine1 = machineMap[curRecipe][recipeMachine];
+			const machine2 = machineMap[curIngredient][ingredientMachine];
 			document.getElementById('recipe1').src = 'ratio_img/' + iconMap[curRecipe] + '.png';
-			document.getElementById('recipe2').src = 'ratio_img/' + machineMap[curRecipe] + '1.png';
+			document.getElementById('recipe2').src = getMachineImage(machine1[0], false);
 			document.getElementById('ingred1').src = 'ratio_img/' + iconMap[curIngredient] + '.png';
-			document.getElementById('ingred2').src = 'ratio_img/' + machineMap[curIngredient] + '2.png';
+			document.getElementById('ingred2').src = getMachineImage(machine2[0], true);
 			
 			const recipe = recipeData.find(r => r.name === curRecipe);
 			const ingredient = recipe.divs.find(i => i.name === curIngredient);
 			document.getElementById('1spd1').innerHTML = recipe.time;
 			document.getElementById('1spd2').innerHTML = ingredient.time;
-			document.getElementById('1ass1').innerHTML = ingredient.aSpeed;
-			document.getElementById('1ass2').innerHTML = recipe.aSpeed;
+			document.getElementById('1ass1').innerHTML = machine2[1];
+			document.getElementById('1ass2').innerHTML = machine1[1];
 			document.getElementById('1qty1').innerHTML = ingredient.quantity;
 			document.getElementById('1qty2').innerHTML = ingredient.required;
 			
 			const wholeTime = getLowestWhole(recipe.time, ingredient.time);
-			const wholeSpeed = getLowestWhole(ingredient.aSpeed, recipe.aSpeed);
+			const wholeSpeed = getLowestWhole(machine2[1], machine1[1]);
 			const wholeQuantity = getLowestWhole(ingredient.quantity, ingredient.required);
 			document.getElementById('2spd1').innerHTML = wholeTime[0];
 			document.getElementById('2spd2').innerHTML = wholeTime[1];
@@ -119,57 +123,102 @@
 			
 			const common = lowestDenom(wholeTime[0] * wholeSpeed[0] * wholeQuantity[0],
 									   wholeTime[1] * wholeSpeed[1] * wholeQuantity[1]);
-			document.getElementById('4top').innerHTML = (wholeTime[0] * wholeSpeed[0] * wholeQuantity[0]) / common + 'x ' + curRecipe;
-			document.getElementById('4bot').innerHTML = (wholeTime[1] * wholeSpeed[1] * wholeQuantity[1]) / common + 'x ' + curIngredient;
+			const finalTop = (wholeTime[0] * wholeSpeed[0] * wholeQuantity[0]) / common;
+			const finalBottom = (wholeTime[1] * wholeSpeed[1] * wholeQuantity[1]) / common;
+			document.getElementById('4top').innerHTML = finalTop + 'x ' + curRecipe;
+			document.getElementById('4bot').innerHTML = finalBottom + 'x ' + curIngredient;
+			
+			document.getElementById('text1').innerHTML = finalTop + ' ' + machineText(machine1[0], finalTop);
+			document.getElementById('text2').innerHTML = finalBottom + ' ' + machineText(machine2[0], finalBottom);
 		};
 		
 		let curRecipe;
 		let curIngredient;
+		let recipeMachine = 0;
+		let ingredientMachine = 0;
 		window.onload = function() {
-			const sel1 = document.getElementById('sel1');
-			sel1.onchange = () => {
-				curRecipe = sel1.value;
-				while (sel2.options.length > 0) sel2.remove(0);
+			const sel1a = document.getElementById('sel1a');
+			const sel2a = document.getElementById('sel2a');
+			const sel1b = document.getElementById('sel1b');
+			const sel2b = document.getElementById('sel2b');
+			sel1a.onchange = () => {
+				curRecipe = sel1a.value;
+				while (sel2a.options.length > 0) sel2a.remove(0);
 				const recipe = recipeData.find(r => r.name === curRecipe);
 				recipe.divs.forEach(i => {
 					const opt = document.createElement('option');
 					opt.text = i.name;
-					sel2.add(opt);
+					sel2a.add(opt);
 				});
-				sel2.selectedIndex = recipe.default;
-				sel2.onchange();
+				sel2a.selectedIndex = recipe.default;
+				
+				while (sel1b.options.length > 0) sel1b.remove(0);
+				machineMap[curRecipe].forEach(m => {
+					const opt = document.createElement('option');
+					opt.text = m[0];
+					sel1b.add(opt);
+				});
+				sel1b.selectedIndex = recipeMachine;
+				
+				sel2a.onchange();
 			};
-			const sel2 = document.getElementById('sel2');
-			sel2.onchange = () => {
-				curIngredient = sel2.value;
+			sel2a.onchange = () => {
+				curIngredient = sel2a.value;
+				
+				while (sel2b.options.length > 0) sel2b.remove(0);
+				machineMap[curIngredient].forEach(m => {
+					const opt = document.createElement('option');
+					opt.text = m[0];
+					sel2b.add(opt);
+				});
+				sel2b.selectedIndex = ingredientMachine;
+				
+				applyRecipe();
+			};
+			sel1b.onchange = () => {
+				recipeMachine = sel1b.selectedIndex;
+				applyRecipe();
+			};
+			sel2b.onchange = () => {
+				ingredientMachine = sel2b.selectedIndex;
 				applyRecipe();
 			};
 			recipeData.forEach(r => {
 				const opt = document.createElement('option');
 				opt.text = r.name;
-				sel1.add(opt);
+				sel1a.add(opt);
 			});
-			sel1.value = 'Electronic Circuit';
-			sel1.onchange();
+			sel1a.value = 'Electronic Circuit';
+			sel1a.onchange();
 		};
 	</script>
 </head>
 <body style='background:#38383c;'>
 	<span style='display:flex'>
-		<span style='display:grid; width: 300px'>
-			<select class='rounded' id='sel1' style='width: 240px'>
+		<span style='width: 270px; margin-right: 20px'>
+			<select style='width: 270px; height: 35px' class='rounded' id='sel1a'>
 			</select>
-			<img style='position: absolute; top: 50px' id='recipe1' src=''>
-			<img style='position: absolute; top: 250px' id='recipe2' src=''>
+			<img id='recipe1' src=''>
+			<select style='width: 270px; height: 35px' class='rounded' id='sel1b'>
+			</select>
+			<img id='recipe2' src=''>
 		</span>
 		<span style='display:table'>
+			<p style='text-align:center; color: white; margin: 0'>Insert the numbers from the tooltips</p>
 			<table>
 				<tr>
+					<td><p style='text-align:center; color: white'>Recipe<br>Time</p></td>
+					<td></td>
+					<td><p style='text-align:center; color: white'>Crafting<br>Speed</p></td>
+					<td></td>
+					<td><p style='text-align:center; color: white'>Item<br>Quantity</p></td>
+				</tr>
+				<tr>
 					<td><div style='background-color: orangered' class='rounded' id='1spd1'/></td>
-					<td rowspan="3" style='width:25px; text-align:center'>●</td>
-					<td><div style='background-color: lightseagreen' class='rounded' id='1ass1'/></td>
-					<td rowspan="3" style='width:25px; text-align:center'>●</td>
-					<td><div style='background-color: cornflowerblue' class='rounded' id='1qty1'/></td>
+					<td rowspan="3" style='width:1em; text-align:center'>●</td>
+					<td><div style='background-color: forestgreen' class='rounded' id='1ass1'/></td>
+					<td rowspan="3" style='width:1em; text-align:center'>●</td>
+					<td><div style='background-color: forestgreen' class='rounded' id='1qty1'/></td>
 				</tr>
 				<tr>
 					<td><hr style='border: 2px inset grey'></td>
@@ -178,17 +227,17 @@
 				</tr>
 				<tr>
 					<td><div style='background-color: forestgreen' class='rounded' id='1spd2'/></td>
-					<td><div style='background-color: orange' class='rounded' id='1ass2'/></td>
-					<td><div style='background-color: yellow' class='rounded' id='1qty2'/></td>
+					<td><div style='background-color: orangered' class='rounded' id='1ass2'/></td>
+					<td><div style='background-color: orangered' class='rounded' id='1qty2'/></td>
 				</tr>
 			</table>
 			<p style='text-align:center; color: white'>Make the fractions whole</p>
 			<table>
 				<tr>
 					<td><div class='rounded' id='2spd1'/></td>
-					<td rowspan="3" style='width:25px; text-align:center'>●</td>
+					<td rowspan="3" style='width:1em; text-align:center'>●</td>
 					<td><div class='rounded' id='2ass1'/></td>
-					<td rowspan="3" style='width:25px; text-align:center'>●</td>
+					<td rowspan="3" style='width:1em; text-align:center'>●</td>
 					<td><div class='rounded' id='2qty1'/></td>
 				</tr>
 				<tr>
@@ -205,33 +254,36 @@
 			<p style='text-align:center; color: white'>Multiply them together</p>
 			<table>
 				<tr>
-					<td><div style='width:266px' class='rounded' id='3top'/></td>
+					<td><div style='width: calc(11em + 8px)' class='rounded' id='3top'/></td>
 				</tr>
 				<tr>
 					<td><hr style='border: 2px inset grey'></td>
 				</tr>
 				<tr>
-					<td><div style='width:266px' class='rounded' id='3bot'/></td>
+					<td><div style='width: calc(11em + 8px)' class='rounded' id='3bot'/></td>
 				</tr>
 			</table>
 			<p style='text-align:center; color: white'>Simplify if possible</p>
 			<table>
 				<tr>
-					<td><div style='background-color: violet; width:266px' class='rounded' id='4top'/></td>
+					<td><div style='background-color: orangered; width: calc(11em + 8px)' class='rounded' id='4top'/></td>
 				</tr>
 				<tr>
 					<td><hr style='border: 2px inset grey'></td>
 				</tr>
 				<tr>
-					<td><div style='background-color: blueviolet; width:266px' class='rounded' id='4bot'/></td>
+					<td><div style='background-color: forestgreen; width: calc(11em + 8px)' class='rounded' id='4bot'/></td>
 				</tr>
 			</table>
+			<p style='text-align:center; color: white'>For every <span id='text1' style='color: #f73'>abc</span>,<br>you need <span id='text2' style='color: lawngreen'>def</span>.</p>
 		</span>
-		<span style='display:grid; margin-left: 20px'>
-			<select class='rounded' id='sel2' style='width: 240px'>
+		<span style='margin-left: 20px; width: 270px'>
+			<select class='rounded' id='sel2a' style='width: 270px; height: 35px'>
 			</select>
-			<img style='position: absolute; top: 50px' id='ingred1' src=''>
-			<img style='position: absolute; top: 250px' id='ingred2' src=''>
+			<img id='ingred1' src=''>
+			<select class='rounded' id='sel2b' style='width: 270px; height: 35px'>
+			</select>
+			<img id='ingred2' src=''>
 		</span>
 	</span>
 </body>
