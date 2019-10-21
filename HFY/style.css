@@ -1,0 +1,68 @@
+/* GLOBAL */
+
+body {
+	background-color: #333;
+	color: #FFF;
+	max-width: 100vh;
+	margin: auto;
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	letter-spacing: .05em;
+	line-height: 1.5em;
+}
+
+/* SIZES AND SPACING */
+
+h1 {
+	font-size: 3.6vmin;
+}
+
+h2 {
+	font-size: 2.7vmin;
+}
+
+p {
+	border-radius: .5vmin;
+	font-size: 1.8vmin;
+	margin: 0;
+}
+
+/* PERSPECTIVES */
+
+.firstperson {
+	margin-right: 52%;
+}
+
+.thirdperson {
+	margin-left: 52%;
+}
+
+.noperson {
+	margin-left: 24%;
+	margin-right: 24%;
+}
+
+speech {
+	padding: 0.25vmin 0.5vmin 0.25vmin 0.5vmin;
+	border-radius: 0.5vmin;
+	background-color: #555;
+	width: 100%;
+	display: inline-block;
+}
+
+whisper {
+	padding: 0.25vmin 0.5vmin 0.25vmin 0.5vmin;
+	border-radius: 0.5vmin;
+	background-color: #555;
+	width: 100%;
+	display: inline-block;
+	font-size: 50%;
+}
+
+/* SPECIAL */
+
+.console {
+	background-color: #000;
+	color: #7F7;
+	font-family: "Courier New", Courier, monospace;
+	padding: .5em;
+}
