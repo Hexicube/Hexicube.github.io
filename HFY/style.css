@@ -74,3 +74,11 @@ whisper {
 	font-family: "Courier New", Courier, monospace;
 	padding: .5em;
 }
+
+a:link {
+	color: #7FF;
+}
+
+a:visited {
+	color: #77F !important;
+}
