@@ -48,6 +48,14 @@ speech {
 	width: 100%;
 	display: inline-block;
 }
+speech.firstperson,
+speech.thirdperson,
+speech.noperson { /* convenience to avoid needing to use <p></p> */
+	border-radius: .5vmin;
+	font-size: 1.8vmin;
+	margin: 0;
+	width: 48%;
+}
 
 whisper {
 	padding: 0.25vmin 0.5vmin 0.25vmin 0.5vmin;
