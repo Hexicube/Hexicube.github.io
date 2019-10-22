@@ -42,7 +42,7 @@ p {
 }
 
 speech {
-	padding: 0.25vmin 0.5vmin 0.25vmin 0.5vmin;
+	padding-left: 0.25vmin;
 	border-radius: 0.5vmin;
 	background-color: #555;
 	width: 100%;
