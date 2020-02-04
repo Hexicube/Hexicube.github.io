@@ -40,12 +40,21 @@
 			}
 			const elemDistance = (col, matcol) => {
 				var dist = 0;
-				var dr = col[0] - matcol[0];
-				dist += dr * dr;
-				var dg = col[1] - matcol[1];
-				dist += dg * dg;
-				var db = col[2] - matcol[2];
-				dist += db * db;
+				var dr = Math.abs(Math.sqrt(col[0]) - Math.sqrt(matcol[0]));
+				dist += dr;
+				var dg = Math.abs(Math.sqrt(col[1]) - Math.sqrt(matcol[1]));
+				dist += dg;
+				var db = Math.abs(Math.sqrt(col[2]) - Math.sqrt(matcol[2]));
+				dist += db;
+				
+				// added penalty for messing with hue
+				var drg = Math.abs(dr - dg);
+				dist += drg * drg;
+				var drb = Math.abs(dr - db);
+				dist += drb * drb;
+				var dgb = Math.abs(dg - db);
+				dist += dgb * dgb;
+				
 				return dist;
 			};
 			const findBestElem = (col) => {
