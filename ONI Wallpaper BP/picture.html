@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+<head>
+	<title>ONI Picture to Wallpaper Blueprint</title>
+	<link rel="stylesheet" href="style.css">
+	<script src='cols.js'></script>
+	<script>
+		window.onload = function() {
+			var curImage = null; // will hold image
+			var imgAsCanvas = document.createElement('canvas');
+			var resultAsCanvas = document.createElement('canvas');
+			var fileName = null;
+			
+			const imagePreviewLoaded = document.getElementById('image-in');
+			const imagePreviewResult = document.getElementById('image-out');
+			const imageScale = document.getElementById('scale');
+			const elemList = document.getElementById('elementpicker');
+			
+			const elemOptions = {};
+			for (var key in materials) {
+				elemOptions[key] = !materials[key].unobtainable;
+				var br = document.createElement('br');
+				elemList.appendChild(br);
+				var col = document.createElement('div');
+				col.style.cssText = 'width: 16px; height: 16px; background-color: rgb('+materials[key].col[0]+','+materials[key].col[1]+','+materials[key].col[2]+'); display: inline-block; margin-left: 4px';
+				elemList.appendChild(col);
+				var newOpt = document.createElement('input');
+				newOpt.type = 'checkbox';
+				newOpt.checked = elemOptions[key];
+				elemList.appendChild(newOpt);
+				var name = document.createElement('span');
+				name.innerHTML = materials[key].name;
+				name.style.cssText = 'margin-right: 4px';
+				elemList.appendChild(name);
+				
+				const thisKey = key;
+				newOpt.onchange = () => {
+					elemOptions[thisKey] = newOpt.checked;
+				};
+			}
+			const elemDistance = (col, matcol) => {
+				var dist = 0;
+				var dr = col[0] - matcol[0];
+				dist += dr * dr;
+				var dg = col[1] - matcol[1];
+				dist += dg * dg;
+				var db = col[2] - matcol[2];
+				dist += db * db;
+				return dist;
+			};
+			const findBestElem = (col) => {
+				var bestElem = 0;
+				var bestDist = 0;
+				for (var key in elemOptions) {
+					if (elemOptions[key]) {
+						var dist = elemDistance(col, materials[key].col);
+						if (!bestElem || dist < bestDist) {
+							bestElem = key;
+							bestDist = dist;
+						}
+					}
+				}
+				console.log(col, bestElem, bestDist);
+				return bestElem;
+			};
+			const elemToCol = (elem) => {
+				return materials[elem].col;
+			};
+			const getCol = (x, y, scale) => {
+				// NOTE: alpha channel is involved to ensure the background is white, not black
+				// TODO: consider actually having a lack of tile for transparent areas
+				const data = imgAsCanvas.getContext('2d').getImageData(x * scale, y * scale, scale, scale).data;
+				var R = 0;
+				var G = 0;
+				var B = 0;
+				var A = 0;
+				const len = data.length / 4;
+				for (var a = 0; a < data.length; a += 4) {
+					R += data[a];
+					G += data[a+1];
+					B += data[a+2];
+					A += data[a+3];
+				}
+				A /= len;
+				return [R/len + (255-A), G/len + (255-A), B/len + (255-A), 255];
+			};
+			const download = (filename, json) => {
+				var pom = document.createElement('a');
+				pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(json)));
+				pom.setAttribute('download', filename);
+				if (document.createEvent) {
+					var event = document.createEvent('MouseEvents');
+					event.initEvent('click', true, true);
+					pom.dispatchEvent(event);
+				}
+				else pom.click();
+			}
+			
+			document.getElementById('image-preview').onclick = () => {
+				const scale = Math.max(1, Math.floor(imageScale.value));
+				const scaledWidth = Math.floor(curImage.width / scale);
+				const scaledHeight = Math.floor(curImage.height / scale);
+				
+				resultAsCanvas.width = scaledWidth;
+				resultAsCanvas.height = scaledHeight;
+				const context = resultAsCanvas.getContext('2d');
+				context.clearRect(0, 0, scaledWidth, scaledHeight);
+				
+				for (var x = 0; x < scaledWidth; x++) {
+					for (var y = 0; y < scaledHeight; y++) {
+						const col = elemToCol(findBestElem(getCol(x, y, scale)));
+						context.fillStyle = 'rgba('+col[0]+','+col[1]+','+col[2]+',255)';
+						context.fillRect(x,y,1,1);
+					}
+				}
+				imagePreviewResult.src = resultAsCanvas.toDataURL('image/png');
+			};
+			document.getElementById('image-export').onclick = () => {
+				const scale = Math.max(1, Math.floor(imageScale.value));
+				const scaledWidth = Math.floor(curImage.width / scale);
+				const scaledHeight = Math.floor(curImage.height / scale);
+				
+				const jsonData = {
+					friendlyname: fileName,
+					buildings: [],
+					digcommands: []
+				};
+				for (var x = 0; x < scaledWidth; x++) {
+					jsonData.digcommands[x] = [];
+					for (var y = 0; y < scaledHeight; y++) {
+						jsonData.buildings.push({
+							offset: {x:x,y:scaledHeight-1-y},
+							buildingdef: 'Wallpaper',
+							selected_elements: [Number(findBestElem(getCol(x, y, scale)))]
+						});
+						jsonData.digcommands[x][y] = {x:x,y:y};
+					}
+				}
+				download(fileName + '.blueprint', jsonData);
+			};
+			document.getElementById('file').onchange = (event) => {
+				curImage = null;
+				imagePreviewLoaded.src = "";
+				imagePreviewResult.src = "";
+				var target = event.target || window.event.srcElement;
+				var files = target.files;
+				if (!FileReader) throw "File Reader not supported.";
+				if (!files || !files.length) throw "No files selected.";
+				var reader = new FileReader();
+				reader.onload = () => {
+					curImage = new Image;
+					curImage.onload = () => {
+						imagePreviewLoaded.src = reader.result;
+						imgAsCanvas.width = curImage.width;
+						imgAsCanvas.height = curImage.height;
+						imgAsCanvas.getContext('2d').clearRect(0, 0, curImage.width, curImage.height);
+						imgAsCanvas.getContext('2d').drawImage(curImage, 0, 0, curImage.width, curImage.height);
+						fileName = files[0].name.substr(0, files[0].name.lastIndexOf('.'));
+					};
+					curImage.src = reader.result;
+				};
+				reader.readAsDataURL(files[0]);
+			};
+		};
+	</script>
+</head>
+<body style='background:#999;'>
+	<span style='display: flex'>
+		<div>
+			<div class='rounded'>
+				<span class='rounded-start'>Select image:</span>
+				<input type='file' class='rounded-end' id='file' style='width:200px;'/>
+			</div>
+			<br>
+			<div class='rounded' style='height:400px;'>
+				<span class='rounded-start'>In preview:</span>
+				<img class='rounded-end' id='image-in' style='object-fit:contain;width:400px;height:400px;image-rendering:pixelated'/>
+			</div>
+			<div class='rounded' style='height:400px;'>
+				<span class='rounded-start'>Out preview:</span>
+				<img class='rounded-end' id='image-out' style='object-fit:contain;width:400px;height:400px;image-rendering:pixelated'/>
+			</div>
+			<br>
+			<div class='rounded'>
+				<span class='rounded-start'>Scale:</span>
+				<input class='rounded-end' id='scale' type='number' min='1' step='1'/>
+			</div>
+			<br>
+			<input class='rounded' id='image-preview' type='button' value='Preview Result'>
+			<input class='rounded' id='image-export' type='button' value='Export'>
+			<br>
+			<div class='rounded' style='height:auto' id='elementpicker'>
+				Choose Elements
+			</div>
+		</div>
+	</span>
+</body>
