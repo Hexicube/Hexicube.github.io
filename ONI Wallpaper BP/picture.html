@@ -34,8 +34,11 @@
 				elemList.appendChild(name);
 				
 				const thisKey = key;
+				const thisOpt = newOpt;
 				newOpt.onchange = () => {
-					elemOptions[thisKey] = newOpt.checked;
+					console.log('Old: ' + elemOptions[thisKey]);
+					elemOptions[thisKey] = thisOpt.checked;
+					console.log('New: ' + elemOptions[thisKey]);
 				};
 			}
 			const elemDistance = (col, matcol) => {
