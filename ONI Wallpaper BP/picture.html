@@ -41,22 +41,59 @@
 					console.log('New: ' + elemOptions[thisKey]);
 				};
 			}
+			const RGBtoHSV = (col) => {
+				let rabs, gabs, babs, rr, gg, bb, h, s, v, diff, diffc;
+				rabs = col[0] / 255;
+				gabs = col[1] / 255;
+				babs = col[2] / 255;
+				v = Math.max(rabs, gabs, babs),
+				diff = v - Math.min(rabs, gabs, babs);
+				diffc = c => (v - c) / 6 / diff + 1 / 2;
+				if (diff == 0) {
+					h = s = 0;
+				} else {
+					s = diff / v;
+					rr = diffc(rabs);
+					gg = diffc(gabs);
+					bb = diffc(babs);
+
+					if (rabs === v) {
+						h = bb - gg;
+					} else if (gabs === v) {
+						h = (1 / 3) + rr - bb;
+					} else if (babs === v) {
+						h = (2 / 3) + gg - rr;
+					}
+					if (h < 0) {
+						h += 1;
+					} else if (h > 1) {
+						h -= 1;
+					}
+				}
+				return {
+					h: h,
+					s: s,
+					v: v
+				};
+			};
+			const HSVnorm = (col) => {
+				var v = col.v;
+				var s = col.s * v;
+				var h = col.h * s;
+				return {
+					h: h,
+					s: s,
+					v: v
+				};
+			};
 			const elemDistance = (col, matcol) => {
+				var colHSV = HSVnorm(RGBtoHSV(col));
+				var matHSV = HSVnorm(RGBtoHSV(matcol));
 				var dist = 0;
-				var dr = Math.abs(Math.sqrt(col[0]) - Math.sqrt(matcol[0]));
-				dist += dr;
-				var dg = Math.abs(Math.sqrt(col[1]) - Math.sqrt(matcol[1]));
-				dist += dg;
-				var db = Math.abs(Math.sqrt(col[2]) - Math.sqrt(matcol[2]));
-				dist += db;
 				
-				// added penalty for messing with hue
-				var drg = Math.abs(dr - dg);
-				dist += drg * drg;
-				var drb = Math.abs(dr - db);
-				dist += drb * drb;
-				var dgb = Math.abs(dg - db);
-				dist += dgb * dgb;
+				dist += Math.abs(colHSV.h - matHSV.h);
+				dist += Math.abs(colHSV.s - matHSV.s);
+				dist += Math.abs(colHSV.v - matHSV.v);
 				
 				return dist;
 			};
@@ -72,7 +109,6 @@
 						}
 					}
 				}
-				console.log(col, bestElem, bestDist);
 				return bestElem;
 			};
 			const elemToCol = (elem) => {
