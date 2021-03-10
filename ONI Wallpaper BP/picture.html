@@ -77,13 +77,11 @@
 				};
 			};
 			const HSVnorm = (col) => {
-				var v = col.v;
-				var s = col.s * v;
-				var h = col.h * s;
+				// normalise saturation, hue has to be done in comparisons as it wraps
 				return {
-					h: h,
-					s: s,
-					v: v
+					h: col.h,
+					s: col.s * col.v,
+					v: col.v
 				};
 			};
 			const elemDistance = (col, matcol) => {
@@ -91,7 +89,9 @@
 				var matHSV = HSVnorm(RGBtoHSV(matcol));
 				var dist = 0;
 				
-				dist += Math.abs(colHSV.h - matHSV.h);
+				var hueDiff = Math.abs(colHSV.h - matHSV.h);
+				if (hueDiff > 0.5) hueDiff = 1 - hueDiff;
+				dist += hueDiff * (colHSV.s + matHSV.s);
 				dist += Math.abs(colHSV.s - matHSV.s);
 				dist += Math.abs(colHSV.v - matHSV.v);
 				
