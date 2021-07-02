@@ -91,25 +91,25 @@
 		];
 		
 		function get_data() {
-			const url = new URL(window.location.href);
-			if (url.searchParams.has('data')) return parse_data(url.searchParams.get('data'));
-			return false;
+			let data = localStorage.getItem('gridData');
+			if (data !== null) return JSON.parse(data);
+			return data;
 		}
 		function parse_data(data) {
 			const partial = data.split('_');
 			let result = [];
 			let pickListCopy = [...pickList];
 			for (let a = 0; a < 25; a++) {
-				const specific = partial[a].split('~');
-				result.push({selected: specific[1] === '1', name: pickList[specific[0]]});
+				result.push({name: pickList[partial[a]]});
 			}
 			return result;
 		}
 		
 		function set_data(data) {
+			localStorage.setItem('gridData', JSON.stringify(data));
 			let result = [];
 			for (let a = 0; a < 25; a++) {
-				result.push([pickList.indexOf(data[a].name), data[a].selected ? '1' : '0'].join('~'));
+				result.push(pickList.indexOf(data[a].name));
 			}
 			const url = new URL(window.location.href);
 			url.searchParams.set('data', result.join('_'));
@@ -162,7 +162,7 @@
 		function toggle(element, index) {
 			element.classList.toggle('selected');
 			let data = get_data();
-			data[index].selected = !data[index].selected
+			data[index].selected = !data[index].selected;
 			set_data(data);
 			check_bingo();
 		}
@@ -189,7 +189,16 @@
 			generate_grid();
 			check_bingo();
 		}
-		window.onload = generate_grid;
+		window.onload = function() {
+			const url = new URL(window.location.href);
+			const oldData = get_data();
+			if (url.searchParams.has('data')) {
+				let newData = parse_data(url.searchParams.get('data'));
+				if (!range(0, 25).every((i) => newData[i].name == oldData[i].name)) set_data(newData);
+			}
+			generate_grid();
+			check_bingo();
+		}
 	</script>
 </head>
 <body style='margin:0;background:#666'>
