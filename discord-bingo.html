@@ -2,25 +2,39 @@
 <head>
 	<title>Factorio #offtopic Bingo</title>
 	<style>
-	#grid {
-		display: grid;
-		grid-template-columns: repeat(5, 1fr);
-		grid-template-rows: repeat(5, 1fr);
-		grid-gap: 5px;
-	}
-	#grid > * {
+	body {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		background: #f66;
-		border: 5px outset #f88;
+		width: 100vw;
+		height: 100vh;
+	}
+	#grid {
+		max-width: 600px;
+		max-height: 600px;
+		width: 100vmin;
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		grid-template-rows: repeat(5, 1fr);
+		grid-gap: 1vmin;
 		text-align: center;
-		font-size: 2vmin;
-		line-height: 3vmin;
+	}
+	#grid > * {
+		display: flex;
+		aspect-ratio: 1;
+		justify-content: center;
+		align-items: center;
+		background: #f66;
+		border: min(1vmin, 5px) outset #f88;
+		font-size: min(2vmin, .8em);
 	}
 	#grid > .selected {
 		background: #5b5;
-		border: 5px outset #7c7;
+		border: min(1vmin, 5px) outset #7c7;
+	}
+	#grid > .selected.winner {
+		background: #6ff;
+		border: min(1vmin, 5px) outset #8ff;
 	}
 	</style>
 	<script>
@@ -29,6 +43,7 @@
 			'Moderator appears<br>and does mod stuff',
 			'Moderator appears<br>and just chats',
 			'A developer<br>talks unprovoked',
+			
 			// phrases
 			'Someone says:<br>"Ping me when X"',
 			'Someone says:<br>"What if X"',
@@ -37,18 +52,17 @@
 			'Someone says<br>they have a pet',
 			'Someone says<br>they\'re leaving',
 			'Someone asks if<br>Factorio is good',
-			'Someone says<br>Discord sucks',
+			
 			// topics
 			'Factorio<br>discussed',
 			'Satisfactory<br>discussed',
-			'Dyson Sphere<br>discussed',
 			'Space<br>discussed',
 			'Religion<br>discussed',
 			'Healthcare<br>discussed',
 			'Biology<br>discussed',
 			'Politics<br>discussed',
 			'Programming<br>discussed',
-			'Speedrunning<br>discussed',
+			
 			// content
 			'Screenshot of<br>Discord',
 			'Screenshot of<br>Factorio',
@@ -59,42 +73,125 @@
 			'Cat picture',
 			'Picture with<br>multiple animals',
 			'Nobody talks for<br>15 minutes',
+			
 			// links
 			'Youtube link',
 			'Github link',
 			'Spotify link',
 			'XKCD link',
-			'Video game<br>store page link',
+			'Video game link',
 			'Reddit link',
+			
 			// misc
 			'One message<br>with 3 reactions',
-			'Message that\'s<br>just emotes',
 			'Really big<br>Google link',
 			'All caps message',
 			'Link has embed<br>that gets removed',
 			'Onomatopoeia'
 		];
-		function pickOne() {
-			var c = pickList.length;
+		
+		function get_data() {
+			const url = new URL(window.location.href);
+			if (url.searchParams.has('data')) return parse_data(url.searchParams.get('data'));
+			return false;
+		}
+		function parse_data(data) {
+			const partial = data.split('_');
+			let result = [];
+			let pickListCopy = [...pickList];
+			for (let a = 0; a < 25; a++) {
+				const specific = partial[a].split('~');
+				result.push({selected: specific[1] === '1', name: pickList[specific[0]]});
+			}
+			return result;
+		}
+		
+		function set_data(data) {
+			let result = [];
+			for (let a = 0; a < 25; a++) {
+				result.push([pickList.indexOf(data[a].name), data[a].selected ? '1' : '0'].join('~'));
+			}
+			const url = new URL(window.location.href);
+			url.searchParams.set('data', result.join('_'));
+			window.history.pushState({}, '', url);
+		}
+		
+		if (!get_data()) {
+			set_data(generate_data());
+		}
+		
+		function generate_data() {
+			let data = [];
+			let pickListCopy = [...pickList];
+			for (let i = 0; i < 25; i++) {
+				data.push({selected: false, name: pickOne(pickListCopy)})
+			}
+			return data;
+		}
+		
+		function pickOne(options) {
+			var c = options.length;
 			var v = Math.floor(Math.random() * c);
-			var p = pickList[v];
-			pickList.splice(v, 1);
+			var p = options[v];
+			options.splice(v, 1);
 			return p;
 		}
-		window.onload = function() {
-			var mainDiv = document.getElementById('grid');
-			for (var i = 0; i < 25; i++) {
-				var elem = document.createElement('div');
-				elem.className = 'griditem';
-				elem.innerHTML = '<span>' + pickOne() + '</span>';
-				mainDiv.appendChild(elem);
-				elem.addEventListener('click', function () {
-					this.classList.toggle('selected');
-				});
+		
+		const range = (start, stop, step=1) => Array(Math.ceil((stop - start)/step)).fill(start).map((x, y) => x + y * step);
+
+		function check_bingo() {
+			let data = get_data();
+			let mainDiv = document.getElementById('grid');
+			for (let i = 0; i < 25; i++) mainDiv.children[i].classList.remove('winner');
+			for (let i of range(0, 5)) {
+				enable_if_all(range(i, i+21, 5), data, mainDiv);
+				enable_if_all(range(i*5, i*5+5), data, mainDiv);
+			}
+			enable_if_all(range(0, 25, 6), data, mainDiv);
+			enable_if_all(range(4, 21, 4), data, mainDiv);
+		}
+		function enable_if_all(list, data, mainDiv) {
+			for (let i of list) {
+				if (!data[i].selected) return;
+			}
+			for (let i of list) {
+				mainDiv.children[i].classList.add('winner');
 			}
 		}
+		
+		function toggle(element, index) {
+			element.classList.toggle('selected');
+			let data = get_data();
+			data[index].selected = !data[index].selected
+			set_data(data);
+			check_bingo();
+		}
+		
+		function generate_grid() {
+			let mainDiv = document.getElementById('grid');
+			mainDiv.innerHTML = '';
+			for (let i = 0; i < 25; i++) {
+				let item = get_data()[i];
+				let div = document.createElement('div');
+				div.innerHTML = item.name;
+				if (item.selected) {
+					div.classList.add('selected');
+				}
+				div.addEventListener('click', function () {
+					toggle(this, i);
+				});
+				mainDiv.appendChild(div);
+			}
+		}
+		
+		function reset() {
+			set_data(generate_data());
+			generate_grid();
+			check_bingo();
+		}
+		window.onload = generate_grid;
 	</script>
 </head>
 <body style='margin:0;background:#666'>
-	<div style='left:0;right:0;margin:auto;width:100vmin;height:100vmin' id='grid'/>
+	<div id='grid'></div><button onClick="reset()" style="position:fixed; top:20px; right:20px;">Reset</button>
 </body>
