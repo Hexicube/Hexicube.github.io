@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<head>
+	<title>Factorio #offtopic Bingo</title>
+	<style>
+	.griditem {
+		width: 20vmin;
+		height: 20vmin;
+		background: #f66;
+		border: 5px outset #f88;
+		box-sizing: border-box;
+		font-size: 2vmin;
+		text-align: center;
+		padding-top: 6vmin;
+		line-height: 3vmin;
+	}
+	.griditem.selected {
+		background: #5b5;
+		border: 5px outset #7c7;
+	}
+	</style>
+	<script>
+		const pickList = [
+			// important person stuff
+			'Moderator appears<br>and does mod stuff',
+			'Moderator appears<br>and just chats',
+			'A developer<br>talks unprovoked',
+			
+			// phrases
+			'Someone says:<br>"Ping me when X"',
+			'Someone says:<br>"What if X"',
+			'Someone says:<br>"Hey look it\'s X"',
+			'Someone says<br>they\'re making food',
+			'Someone says<br>they have a pet',
+			'Someone says<br>they\'re leaving',
+			'Someone asks if<br>Factorio is good',
+			
+			// topics
+			'Factorio<br>discussed',
+			'Satisfactory<br>discussed',
+			'Space<br>discussed',
+			'Religion<br>discussed',
+			'Healthcare<br>discussed',
+			'Biology<br>discussed',
+			'Politics<br>discussed',
+			'Programming<br>discussed',
+			
+			// content
+			'Screenshot of<br>Discord',
+			'Screenshot of<br>Factorio',
+			'Screenshot of<br>any 2D game',
+			'Screenshot of<br>any 3D game',
+			'Wall of text',
+			'Dog picture',
+			'Cat picture',
+			'Picture with<br>multiple animals',
+			'Nobody talks for<br>15 minutes',
+			
+			// links
+			'Youtube link',
+			'Github link',
+			'Spotify link',
+			'XKCD link',
+			'Video game link',
+			'Reddit link',
+			
+			// misc
+			'One message<br>with 3 reactions',
+			'Really big<br>Google link',
+			'All caps message',
+			'Link has embed<br>that gets removed',
+			'Onomatopoeia'
+		];
+		function pickOne() {
+			var c = pickList.length;
+			var v = Math.floor(Math.random() * c);
+			var p = pickList[v];
+			pickList.splice(v, 1);
+			return p;
+		}
+		window.onload = function() {
+			var mainDiv = document.getElementById('grid');
+			for (var y = 0; y < 5; y++) {
+				var subDiv = document.createElement('div');
+				mainDiv.appendChild(subDiv)
+				for (var x = 0; x < 5; x++) {
+					var elem = document.createElement('div');
+					elem.className = 'griditem';
+					elem.innerHTML = '<span>' + pickOne() + '</span>';
+					subDiv.appendChild(elem);
+					elem.addEventListener('click', function () {
+						this.classList.toggle('selected');
+					});
+				}
+			}
+		}
+	</script>
+</head>
+<body style='margin:0;background:#666'>
+	<div style='left:0;right:0;margin:auto;width:100vmin;height:100vmin;display:flex' id='grid'/>
+</body>
