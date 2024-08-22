@@ -27,6 +27,15 @@ var shotInfo = {
       "target": [],
       "cue": [],
       "gold": []
+    },
+    {
+      "desc": [
+        "Black section halfway over line?",
+        "Barely too hard."
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
     }
   ],
   "chain": [
