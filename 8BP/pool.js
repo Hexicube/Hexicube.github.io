@@ -1,5 +1,4 @@
 var shotInfo = {
-  "desc": "All shots are force 4 and spin is not used, unless stated otherwise.",
   "basic": [
     {
       "tint": "grey",
