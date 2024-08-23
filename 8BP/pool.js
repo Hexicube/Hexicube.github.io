@@ -2,18 +2,21 @@ var shotInfo = {
   "desc": "All shots are force 4 and spin is not used, unless stated otherwise.",
   "basic": [
     {
+      "tint": "grey",
       "desc": "Too hard, use power shown in Basic 2?",
       "target": [],
       "cue": [],
       "gold": []
     },
     {
+      "tint": "gold",
       "desc": "As shown.",
       "target": [],
       "cue": [],
       "gold": []
     },
     {
+      "tint": "red",
       "desc": [
         "Slightly too hard.",
         ""
@@ -23,12 +26,14 @@ var shotInfo = {
       "gold": []
     },
     {
+      "tint": "gold",
       "desc": "As shown (very slightly too soft).",
       "target": [],
       "cue": [],
       "gold": []
     },
     {
+      "tint": "red",
       "desc": [
         "Black section halfway over line?",
         "Barely too hard."
@@ -40,6 +45,7 @@ var shotInfo = {
   ],
   "chain": [
     {
+      "tint": "red",
       "desc": "Adjust slightly, approximation drawn in red.",
       "target": [],
       "cue": [],
@@ -47,6 +53,7 @@ var shotInfo = {
       "red": []
     },
     {
+      "tint": "grey",
       "desc": [
         "Far too hard, probably intended for force 1.",
         ""
@@ -57,6 +64,7 @@ var shotInfo = {
       "red": []
     },
     {
+      "tint": "cyan",
       "desc": [
         "Slightly too soft.",
         ""
@@ -67,6 +75,7 @@ var shotInfo = {
       "red": []
     },
     {
+      "tint": "gold",
       "desc": [
         "Hit between shown and 1/4 power.",
         "Shown power almost too hard."
@@ -77,6 +86,7 @@ var shotInfo = {
       "red": []
     },
     {
+      "tint": "cyan",
       "desc": [
         "Too hard.",
         ""
@@ -89,6 +99,7 @@ var shotInfo = {
   ],
   "rebound": [
     {
+      "tint": "gold",
       "desc": [
         "Aim with high aim level queue to line up, align battered cue to blue/white border on table cushion.",
         "Almost too soft, aim for 1/3rd of black segment below line."
@@ -98,11 +109,22 @@ var shotInfo = {
       "gold": []
     },
     {
+      "tint": "cyan",
       "desc": [
         "On target, too hard.",
         "End result of A.",
         "Off target, too soft.",
         "End result of C."
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
+    },
+    {
+      "tint": "grey",
+      "desc": [
+        "On target, far too hard.",
+        ""
       ],
       "target": [],
       "cue": [],
@@ -124,10 +146,10 @@ function iterateShots(data, type) {
     document.getElementById("shots").appendChild(shotObj);
 
     var shotToggle = document.createElement("button");
-    shotToggle.innerHTML = "Toggle " + name + "<br/>" + shotHtml[1];
+    shotToggle.innerHTML = "<h4>" + name + "</h4>" + shotHtml[1];
     shotToggle.type = "button";
     shotToggle.onclick = function() { toggleVisible(shotObj) };
-    shotToggle.style = "flex-basis: 10%";
+    shotToggle.style = "flex-basis: 10%; background: " + shot.tint;
     document.getElementById("toggles").appendChild(shotToggle);
   });
 }
