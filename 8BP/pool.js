@@ -94,6 +94,17 @@ var shotInfo = {
       "cue": [],
       "gold": [],
       "red": []
+    },
+    {
+      "tint": "grey",
+      "desc": [
+        "Too hard (bounces).",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
     }
   ],
   "rebound": [
