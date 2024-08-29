@@ -40,6 +40,26 @@ var shotInfo = {
       "target": [],
       "cue": [],
       "gold": []
+    },
+    {
+      "tint": "white",
+      "desc": [
+        "Add backspin to avoid double-kissing.",
+        "Too soft."
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
+    },
+    {
+      "tint": "cyan",
+      "desc": [
+        "Too soft.",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
     }
   ],
   "chain": [
@@ -99,6 +119,17 @@ var shotInfo = {
       "tint": "grey",
       "desc": [
         "Too hard (bounces).",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
+    },
+    {
+      "tint": "cyan",
+      "desc": [
+        "Too soft, cut too far.",
         ""
       ],
       "target": [],
