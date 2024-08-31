@@ -136,6 +136,17 @@ var shotInfo = {
       "cue": [],
       "gold": [],
       "red": []
+    },
+    {
+      "tint": "cyan",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
     }
   ],
   "rebound": [
