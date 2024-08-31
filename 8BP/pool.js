@@ -65,7 +65,10 @@ var shotInfo = {
   "chain": [
     {
       "tint": "red",
-      "desc": "Adjust slightly, approximation drawn in red.",
+      "desc": [
+        "Too soft.",
+        ""
+      ],
       "target": [],
       "cue": [],
       "gold": [],
