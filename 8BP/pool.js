@@ -60,6 +60,20 @@ var shotInfo = {
       "target": [],
       "cue": [],
       "gold": []
+    },
+    {
+      "tint": "gold",
+      "desc": "",
+      "target": [],
+      "cue": [],
+      "gold": []
+    },
+    {
+      "tint": "gold",
+      "desc": "",
+      "target": [],
+      "cue": [],
+      "gold": []
     }
   ],
   "chain": [
@@ -144,6 +158,25 @@ var shotInfo = {
       "tint": "cyan",
       "desc": [
         "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
+    },
+    {
+      "tint": "gold",
+      "desc": "",
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
+    },
+    {
+      "tint": "grey",
+      "desc": [
+        "Too soft, bad angle.",
         ""
       ],
       "target": [],
