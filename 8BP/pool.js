@@ -217,6 +217,16 @@ var shotInfo = {
       "target": [],
       "cue": [],
       "gold": []
+    },
+    {
+      "tint": "grey",
+      "desc": [
+        "On target, do not adjust aim.",
+        "Far too hard (bounced)."
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
     }
   ]
 };
