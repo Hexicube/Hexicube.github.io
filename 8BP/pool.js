@@ -74,6 +74,16 @@ var shotInfo = {
       "target": [],
       "cue": [],
       "gold": []
+    },
+    {
+      "tint": "white",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
     }
   ],
   "chain": [
