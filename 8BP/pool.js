@@ -84,6 +84,16 @@ var shotInfo = {
       "target": [],
       "cue": [],
       "gold": []
+    },
+    {
+      "tint": "red",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
     }
   ],
   "chain": [
@@ -187,6 +197,17 @@ var shotInfo = {
       "tint": "grey",
       "desc": [
         "Too soft, bad angle.",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
+    },
+    {
+      "tint": "red",
+      "desc": [
+        "",
         ""
       ],
       "target": [],
