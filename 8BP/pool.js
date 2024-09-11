@@ -214,6 +214,17 @@ var shotInfo = {
       "cue": [],
       "gold": [],
       "red": []
+    },
+    {
+      "tint": "grey",
+      "desc": [
+        "Cut far too much.",
+        "Red barely hits gold."
+      ],
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
     }
   ],
   "rebound": [
