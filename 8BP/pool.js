@@ -361,7 +361,7 @@ function iterateShots(data, type) {
     shotToggle.innerHTML = "<h4>" + name + "</h4>" + shotHtml[1];
     shotToggle.type = "button";
     shotToggle.onclick = function() { toggleVisible(shotObj) };
-    shotToggle.style = "flex-basis: 10%; background: " + shot.tint;
+    shotToggle.style = "width: 10%; background: " + shot.tint;
     document.getElementById("toggles").appendChild(shotToggle);
   });
 }
@@ -391,7 +391,12 @@ function toggleVisible(div) {
 }
 
 window.onload = function () {
+  var toggles = document.getElementById("toggles");
   iterateShots(shotInfo.basic, "Basic");
+  var br = document.createElement("br");
+  toggles.appendChild(br);
   iterateShots(shotInfo.chain, "Chain");
+  br = document.createElement("br");
+  toggles.appendChild(br);
   iterateShots(shotInfo.rebound, "Rebound");
 }
