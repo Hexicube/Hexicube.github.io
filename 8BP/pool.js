@@ -386,13 +386,15 @@ function buildShot(data, name) {
     images.push([name, data.desc]);
   }
   else data.desc.forEach((str, i) => {
-    images.push([name + String.fromCharCode(65 + i), String.fromCharCode(65 + i) + ": " + str]);
+    if (str == "") images.push([name + String.fromCharCode(65 + i), ""]);
+    else images.push([name + String.fromCharCode(65 + i), String.fromCharCode(65 + i) + ": " + str]);
   });
   var resp = "<h3>" + name + "</h3><div style='display: flex; flex-wrap: wrap'>";
   var firstImg = "<img src='./" + images[0][0] + ".png' width=100% />";
   images.forEach(img => {
     resp += "<div style='flex-basis:50%; margin-top: 20px'><img src='./" + img[0] + ".png' width=100% onclick='getPos(event)' /><br/>";
-    resp += "<span style='margin-left: 40px'>" + img[1] + "</span></div>";
+    if (img[1] == "") resp += "</div>";
+    else resp += "<span style='margin-left: 40px'>" + img[1] + "</span></div>";
   });
   return [resp + "</div>", firstImg];
 }
