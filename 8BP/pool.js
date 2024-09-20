@@ -2,7 +2,7 @@ var shotInfo = {
   "basic": [
     {
       "tint": "grey",
-      "desc": "Too hard, use power shown in Basic 2?",
+      "desc": "Slightly too hard.",
       "target": [],
       "cue": [],
       "gold": []
@@ -87,6 +87,46 @@ var shotInfo = {
     },
     {
       "tint": "red",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
+    },
+    {
+      "tint": "white",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
+    },
+    {
+      "tint": "red",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
+    },
+    {
+      "tint": "grey",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
+    },
+    {
+      "tint": "grey",
       "desc": [
         "",
         ""
@@ -225,6 +265,28 @@ var shotInfo = {
       "cue": [],
       "gold": [],
       "red": []
+    },
+    {
+      "tint": "grey",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
+    },
+    {
+      "tint": "gold",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [],
+      "cue": [],
+      "gold": [],
+      "red": []
     }
   ],
   "rebound": [
@@ -264,7 +326,17 @@ var shotInfo = {
       "tint": "grey",
       "desc": [
         "On target, do not adjust aim.",
-        "Far too hard (bounced)."
+        "Far too hard."
+      ],
+      "target": [],
+      "cue": [],
+      "gold": []
+    },
+    {
+      "tint": "gold",
+      "desc": [
+        "",
+        ""
       ],
       "target": [],
       "cue": [],
