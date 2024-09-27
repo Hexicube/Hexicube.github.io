@@ -9,7 +9,7 @@ var shotInfo = {
     },
     {
       "tint": "gold",
-      "desc": "As shown.",
+      "desc": "As shown. (now too weak???)",
       "target": [.45, .55],
       "cue":    [.75, .64],
       "gold":   [.69, .50]
@@ -236,7 +236,7 @@ var shotInfo = {
     {
       "tint": "grey",
       "desc": [
-        "Too soft, bad angle.",
+        "",
         ""
       ],
       "target": [.34, .69],
@@ -298,6 +298,17 @@ var shotInfo = {
       "cue":    [.78, .51],
       "gold":   [.54, .42],
       "red":    [.65, .46]
+    },
+    {
+      "tint": "red",
+      "desc": [
+        "",
+        ""
+      ],
+      "target": [.66, .59],
+      "cue":    [.29, .57],
+      "gold":   [.50, .69],
+      "red":    [.39, .67]
     }
   ],
   "rebound": [
