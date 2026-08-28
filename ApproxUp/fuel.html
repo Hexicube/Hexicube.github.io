@@ -99,6 +99,7 @@
 					redSlider.value = redFuel;
 				}
 				blueFuel = 1 - redFuel - greenFuel;
+				if (blueFuel < 0) blueFuel = 0; // occasionally happens
 				computeFuel();
 			}
 			redFuel = Number(redSlider.value);
@@ -111,16 +112,18 @@
 					greenSlider.value = greenFuel;
 				}
 				blueFuel = 1 - redFuel - greenFuel;
+				if (blueFuel < 0) blueFuel = 0; // occasionally happens
 				computeFuel();
 			}
 			greenFuel = Number(greenSlider.value);
 			
 			blueFuel = 1 - redFuel - greenFuel;
+			if (blueFuel < 0) blueFuel = 0; // occasionally happens
 			
 			function showFuelMix() {
 				let stability = getFuelStability(redFuel, greenFuel, blueFuel);
-				document.getElementById("fuelmix").innerHTML = "Mixture: " + redFuel.toFixed(3) + ":" + greenFuel.toFixed(3) + ":" + blueFuel.toFixed(3);
-				document.getElementById("fuelstab").innerHTML = "Stability: " + stability.toFixed(5);
+				document.getElementById("fuelmix").innerHTML = "Mixture: " + redFuel.toLocaleString(undefined, {style:"percent",minimumFractionDigits:1}) + ":" + greenFuel.toLocaleString(undefined, {style:"percent",minimumFractionDigits:1}) + ":" + blueFuel.toLocaleString(undefined, {style:"percent",minimumFractionDigits:1});
+				document.getElementById("fuelstab").innerHTML = "Stability: " + stability.toLocaleString(undefined, {style:"percent",minimumFractionDigits:3});
 				
 				let newLine = document.createElement("div");
 				newLine.className = "chart-line";
@@ -129,11 +132,23 @@
 			}
 			
 			function createLineGraph() {
+				let stability = getFuelStability(redFuel, greenFuel, blueFuel);
+				
 				const height = 400;
 				let values = getFuelEfficiencyValues(redFuel, greenFuel, blueFuel);
 				const numLines = values.length - 1;
 				const step = 400 / numLines;
+				
+				let bestValue = 0;
+				if (values[values.length - 1] <= stability) bestValue = values[values.length - 1];
+				let bestValueAt = values.length - 1;
+				
 				for (let a = 0; a < numLines; a++) {
+					if (values[a] <= stability && values[a] > bestValue) {
+						bestValue = values[a];
+						bestValueAt = a;
+					}
+					
 					let left = 400 * a / numLines;
 					
 					let curValue = values[a];
@@ -148,6 +163,8 @@
 					newLine.style.cssText = `--y: ${bottom}px; --x: ${left}px; --hypotenuse: ${hypot}; --angle: ${angle}`;
 					linegraph.appendChild(newLine);
 				}
+				
+				document.getElementById("peakeff").innerHTML = "Peak efficiency: " + bestValue.toLocaleString(undefined, {style:"percent",minimumFractionDigits:1}) + " @ " + (bestValueAt / (values.length - 1)).toLocaleString(undefined, {style:"percent",minimumFractionDigits:1});
 			}
 			
 			function computeFuel() {
@@ -172,4 +189,5 @@
 		<p id="fuelstab"></p>
 	</div>
 	<div id="linegraph" style="list-style: none; margin: 0; padding: 0; width: 400px; height: 400px; border: 1px solid black; position: relative"></div>
+	<p id="peakeff"></p>
 </body>
