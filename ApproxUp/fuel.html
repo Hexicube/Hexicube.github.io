@@ -164,7 +164,7 @@
 					linegraph.appendChild(newLine);
 				}
 				
-				document.getElementById("peakeff").innerHTML = "Peak efficiency: " + bestValue.toLocaleString(undefined, {style:"percent",minimumFractionDigits:1}) + "<br/>Thrust target: " + (bestValueAt / (values.length - 1)).toLocaleString(undefined, {style:"percent",minimumFractionDigits:1});
+				document.getElementById("peakeff").innerHTML = "Peak thrust: " + bestValue.toLocaleString(undefined, {style:"percent",minimumFractionDigits:1}) + "<br/>Throttle target: " + (bestValueAt / (values.length - 1)).toLocaleString(undefined, {style:"percent",minimumFractionDigits:1});
 			}
 			
 			function computeFuel() {
